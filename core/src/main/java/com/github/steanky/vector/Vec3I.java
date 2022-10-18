@@ -53,36 +53,159 @@ public sealed interface Vec3I permits Vec3I.Base {
         return add(other.getX(), other.getY(), other.getZ());
     }
 
+    /**
+     * Subtracts another vector from this one.
+     *
+     * @param x the x-component to subtract
+     * @param y the y-component to subtract
+     * @param z the z-component to subtract
+     * @return the difference of this vector and another
+     */
     @NotNull Vec3I sub(int x, int y, int z);
 
+    /**
+     * Subtracts another vector from this one.
+     *
+     * @param other the vector to subtract from this one
+     * @return the difference of this vector and another
+     */
     default @NotNull Vec3I sub(@NotNull Vec3I other) {
         return sub(other.getX(), other.getY(), other.getZ());
     }
 
+    /**
+     * Multiplies this vector by another. This is performed by multiplying each component of this vector by each
+     * equivalent component of the given vector.
+     *
+     * @param x the x-component to multiply by
+     * @param y the y-component to multiply by
+     * @param z the z-component to multiply by
+     * @return the product of this vector and another
+     */
     @NotNull Vec3I mul(int x, int y, int z);
 
+    /**
+     * Multiplies this vector by another. This is performed by multiplying each component of this vector by each
+     * equivalent component of the given vector.
+     *
+     * @param other the vector to multiply with this one
+     * @return the product of this vector and another
+     */
     default @NotNull Vec3I mul(@NotNull Vec3I other) {
         return mul(other.getX(), other.getY(),other.getZ());
     }
 
+    /**
+     * Divides this vector by another. This is performed by dividing each component of this vector by the equivalent
+     * component of the given vector.
+     *
+     * @param x the x-component to divide by
+     * @param y the y-component to divide by
+     * @param z the z-component to divide by
+     * @return the quotient of this vector and another
+     */
     @NotNull Vec3I div(int x, int y, int z);
 
+    /**
+     * The length of this vector (distance from the origin). Expected to be slower than {@link Vec3I#lengthSquared()}
+     * due to requiring a {@link Math#sqrt(double)} call.
+     *
+     * @return the length of this vector
+     */
+    double length();
+
+    /**
+     * The squared length of this vector (squared distance from the origin).
+     *
+     * @return the squared length of this vector
+     */
+    double lengthSquared();
+
+    /**
+     * Computes the distance between this vector and another.
+     *
+     * @param x the x-component of the other vector
+     * @param y the y-component of the other vector
+     * @param z the z-component of the other vector
+     * @return the distance between this vector and the other
+     */
+    double distanceTo(int x, int y, int z);
+
+    /**
+     * Computes the distance between this vector and another.
+     *
+     * @param other the other vector
+     * @return the distance between this vector and the other
+     */
+    default double distanceTo(@NotNull Vec3I other) {
+        return distanceTo(other.getX(), other.getY(), other.getZ());
+    }
+
+    /**
+     * Computes the squared distance between this vector and another.
+     *
+     * @param x the x-component of the other vector
+     * @param y the y-component of the other vector
+     * @param z the z-component of the other vector
+     * @return the squared distance between this vector and the other
+     */
+    double distanceSquaredTo(int x, int y, int z);
+
+    /**
+     * Computes the squared distance between this vector and another.
+     *
+     * @param other the other vector
+     * @return the squared distance between this vector and the other
+     */
+    default double distanceSquaredTo(@NotNull Vec3I other) {
+        return distanceTo(other.getX(), other.getY(), other.getZ());
+    }
+
+    /**
+     * Divides this vector by another. This is performed by dividing each component of this vector by the equivalent
+     * component of the given vector.
+     *
+     * @param other the vector to divide this one by
+     * @return the quotient of this vector and another
+     */
     default @NotNull Vec3I div(@NotNull Vec3I other) {
         return div(other.getX(), other.getY(), other.getZ());
     }
 
+    /**
+     * Sets the value of this vector.
+     *
+     * @param x the new x-coordinate
+     * @param y the new y-coordinate
+     * @param z the new z-coordinate
+     */
     default void set(int x, int y, int z) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Sets the x-coordinate of this vector.
+     *
+     * @param x the new x-coordinate
+     */
     default void setX(int x) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Sets the y-coordinate of this vector.
+     *
+     * @param y the new y-coordinate
+     */
     default void setY(int y) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Sets the z-coordinate of this vector.
+     *
+     * @param z the new z-coordinate
+     */
     default void setZ(int z) {
         throw new UnsupportedOperationException();
     }
@@ -123,6 +246,10 @@ public sealed interface Vec3I permits Vec3I.Base {
         return Vec3ICache.cached(x, y, z);
     }
 
+    /**
+     * Base class of both mutable and immutable Vec3I implementations. Provides common vector operations as well as
+     * efficient {@link Object#equals(Object)} and {@link Object#hashCode()}.
+     */
     sealed abstract class Base implements Vec3I permits Immutable, Mutable {
         @Override
         public final int hashCode() {
@@ -169,14 +296,48 @@ public sealed interface Vec3I permits Vec3I.Base {
             return op(getX() / x, getY() / y, getZ() / z);
         }
 
+        @Override
+        public double length() {
+            return Math.sqrt(lengthSquared());
+        }
+
+        @Override
+        public double lengthSquared() {
+            return (long)getX() * (long)getY() * (long)getZ();
+        }
+
+        @Override
+        public double distanceTo(int x, int y, int z) {
+            return Math.sqrt(distanceSquaredTo(x, y, z));
+        }
+
+        @Override
+        public double distanceSquaredTo(int x, int y, int z) {
+            long dX = (long)x - getX();
+            long dY = (long)y - getY();
+            long dZ = (long)z - getZ();
+
+            return dX * dX + dY * dY + dZ * dZ;
+        }
+
         protected abstract @NotNull Vec3I op(int x, int y, int z);
     }
 
+    /**
+     * The immutable vector type.
+     */
     final class Immutable extends Base {
         private final int x;
         private final int y;
         private final int z;
 
+        /**
+         * Constructs a new immutable vector.
+         *
+         * @param x the x-component
+         * @param y the y-component
+         * @param z the z-component
+         */
         Immutable(int x, int y, int z) {
             this.x = x;
             this.y = y;
@@ -205,11 +366,21 @@ public sealed interface Vec3I permits Vec3I.Base {
         }
     }
 
+    /**
+     * The mutable vector type.
+     */
     final class Mutable extends Base {
         private int x;
         private int y;
         private int z;
 
+        /**
+         * Constructs a new mutable vector.
+         *
+         * @param x the initial x-component
+         * @param y the initial y-component
+         * @param z the initial z-component
+         */
         Mutable(int x, int y, int z) {
             this.x = x;
             this.y = y;

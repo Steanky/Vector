@@ -10,7 +10,8 @@ import java.util.Objects;
 
 /**
  * Implementation of {@link Vec3I2ObjectMap} based on an internal {@link Long2ObjectOpenHashMap}.
- * @param <T>
+ *
+ * @param <T> the type of object held in the map
  */
 public class HashVec3I2ObjectMap<T> implements Vec3I2ObjectMap<T> {
     private final Long2ObjectMap<T> underlyingMap;
@@ -26,6 +27,32 @@ public class HashVec3I2ObjectMap<T> implements Vec3I2ObjectMap<T> {
     private final int bitHeight;
     private final int bitDepth;
 
+    /**
+     * Creates a new {@link HashVec3I2ObjectMap} with the given origin and bounds. All operations are performed relative
+     * to the origin. Combining with width, height, and depth gives a rectangular prism bounding the set of all
+     * potentially unique values. Attempting to perform an operation that exceeds this space will "wrap around" and
+     * access an area of the space corresponding to the modulus of the actual width of the exceeding dimension.
+     * Therefore, there are no coordinates which are strictly outside the scope of this map, although the actual number
+     * of unique values possible is limited to the product of the actual widths.
+     * <p>
+     * The "actual width" of an axis is not necessarily the value given to the constructor. Rather, it is the highest
+     * power of two that is strictly greater than the given width. For example, a given width of 1 will yield an actual
+     * width of 2, and a given width of 4 will yield an actual width of 8.
+     * <p>
+     * The sum of the base-2 logarithms of the actual widths cannot exceed {@link Long#SIZE}, or an
+     * {@link IllegalArgumentException} will be thrown by this constructor.
+     * <p>
+     * Negative widths are not allowed and will result in an {@link IllegalArgumentException}.
+     *
+     * @param x the x-origin
+     * @param y the y-origin
+     * @param z the z-origin
+     * @param width the x-width
+     * @param height the y-width
+     * @param depth the z-width
+     * @param initialCapacity the initial capacity of the underlying map
+     * @param loadFactor the load factor of the underlying map
+     */
     public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth, int initialCapacity,
             float loadFactor) {
         this.underlyingMap = new Long2ObjectOpenHashMap<>(initialCapacity, loadFactor);
@@ -58,18 +85,52 @@ public class HashVec3I2ObjectMap<T> implements Vec3I2ObjectMap<T> {
         this.bitDepth = bitDepth;
     }
 
+    /**
+     * Convenience overload that uses the default initial size {@link Hash#DEFAULT_INITIAL_SIZE} and default load factor
+     * {@link Hash#DEFAULT_LOAD_FACTOR} for the internal {@link Long2ObjectOpenHashMap}.
+     *
+     * @param x the x-origin
+     * @param y the y-origin
+     * @param z the z-origin
+     * @param width the x-width
+     * @param height the y-width
+     * @param depth the z-width
+     */
     public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth) {
         this(x, y, z, width, height, depth, Hash.DEFAULT_INITIAL_SIZE, Hash.DEFAULT_LOAD_FACTOR);
     }
 
+    /**
+     * Convenience overload that uses the default load factor {@link Hash#DEFAULT_LOAD_FACTOR} for the internal
+     * {@link Long2ObjectOpenHashMap}.
+     *
+     * @param x the x-origin
+     * @param y the y-origin
+     * @param z the z-origin
+     * @param width the x-width
+     * @param height the y-width
+     * @param depth the z-width
+     * @param initialCapacity the initial capacity of the underlying map
+     */
     public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth, int initialCapacity) {
         this(x, y, z, width, height, depth, initialCapacity, Hash.DEFAULT_LOAD_FACTOR);
     }
 
+    /**
+     * Convenience overload that uses the default initial size {@link Hash#DEFAULT_INITIAL_SIZE} for the internal
+     * {@link Long2ObjectOpenHashMap}.
+     *
+     * @param x the x-origin
+     * @param y the y-origin
+     * @param z the z-origin
+     * @param width the x-width
+     * @param height the y-width
+     * @param depth the z-width
+     * @param loadFactor the load factor of the underlying map
+     */
     public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth, float loadFactor) {
         this(x, y, z, width, height, depth, Hash.DEFAULT_INITIAL_SIZE, loadFactor);
     }
-
 
     private static int bitSize(int highestBit) {
         return Integer.numberOfTrailingZeros(highestBit) + 1;
