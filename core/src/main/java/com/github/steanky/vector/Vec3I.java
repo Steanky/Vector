@@ -178,17 +178,29 @@ public sealed interface Vec3I permits Vec3I.Base {
      * @param x the new x-coordinate
      * @param y the new y-coordinate
      * @param z the new z-coordinate
+     * @return this instance, for chaining
      */
-    default void set(int x, int y, int z) {
+    default @NotNull Vec3I set(int x, int y, int z) {
         throw new UnsupportedOperationException();
+    }
+
+    /**
+     * Sets the value of this vector.
+     *
+     * @param other the vector whose components will be used to set this vector's
+     * @return this instance, for chaining
+     */
+    default @NotNull Vec3I set(@NotNull Vec3I other) {
+        return set(other.getX(), other.getY(), other.getZ());
     }
 
     /**
      * Sets the x-coordinate of this vector.
      *
      * @param x the new x-coordinate
+     * @return this instance, for chaining
      */
-    default void setX(int x) {
+    default @NotNull Vec3I setX(int x) {
         throw new UnsupportedOperationException();
     }
 
@@ -196,8 +208,9 @@ public sealed interface Vec3I permits Vec3I.Base {
      * Sets the y-coordinate of this vector.
      *
      * @param y the new y-coordinate
+     * @return this instance, for chaining
      */
-    default void setY(int y) {
+    default @NotNull Vec3I setY(int y) {
         throw new UnsupportedOperationException();
     }
 
@@ -205,8 +218,9 @@ public sealed interface Vec3I permits Vec3I.Base {
      * Sets the z-coordinate of this vector.
      *
      * @param z the new z-coordinate
+     * @return this instance, for chaining
      */
-    default void setZ(int z) {
+    default @NotNull Vec3I setZ(int z) {
         throw new UnsupportedOperationException();
     }
 
@@ -248,14 +262,16 @@ public sealed interface Vec3I permits Vec3I.Base {
 
     /**
      * Base class of both mutable and immutable Vec3I implementations. Provides common vector operations as well as
-     * efficient {@link Object#equals(Object)} and {@link Object#hashCode()}.
+     * efficient {@link Object#equals(Object)} and {@link Object#hashCode()} implementations.
      */
     sealed abstract class Base implements Vec3I permits Immutable, Mutable {
+        private static final int HASH_PRIME = 31;
+
         @Override
         public final int hashCode() {
-            int result = 31 + getX();
-            result = 31 * result + getY();
-            result = 31 * result + getZ();
+            int result = HASH_PRIME + getX();
+            result = HASH_PRIME * result + getY();
+            result = HASH_PRIME * result + getZ();
             return result;
         }
 
@@ -403,25 +419,29 @@ public sealed interface Vec3I permits Vec3I.Base {
         }
 
         @Override
-        public void set(int x, int y, int z) {
+        public @NotNull Vec3I set(int x, int y, int z) {
             this.x = x;
             this.y = y;
             this.z = z;
+            return this;
         }
 
         @Override
-        public void setX(int x) {
+        public @NotNull Vec3I setX(int x) {
             this.x = x;
+            return this;
         }
 
         @Override
-        public void setY(int y) {
+        public @NotNull Vec3I setY(int y) {
             this.y = y;
+            return this;
         }
 
         @Override
-        public void setZ(int z) {
+        public @NotNull Vec3I setZ(int z) {
             this.z = z;
+            return this;
         }
 
         @Override
