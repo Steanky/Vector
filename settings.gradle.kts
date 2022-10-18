@@ -7,7 +7,7 @@ if (localSettings.exists()) {
 }
 
 // New modules are added by appending them to the sequenceOf function
-sequenceOf("java").forEach {
+sequenceOf("core").forEach {
     val projectDirectory = file(it)
     include(":${rootProject.name}-$it")
     project(":${rootProject.name}-$it").projectDir = projectDirectory
