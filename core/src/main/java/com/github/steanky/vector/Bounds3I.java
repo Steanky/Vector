@@ -33,7 +33,21 @@ public sealed interface Bounds3I permits Bounds3I.Base {
 
     void forEach(@NotNull Vec3IConsumer consumer);
 
-    abstract sealed class Base implements Bounds3I permits Mutable, Immutable {
+    @NotNull Bounds3I mutableCopy();
+
+    default @NotNull Bounds3I ensureMutable() {
+        if (this instanceof Mutable) {
+            return this;
+        }
+
+        return mutableCopy();
+    }
+
+    @NotNull Bounds3I immutable();
+
+    @NotNull Bounds3I immutableView();
+
+    abstract sealed class Base implements Bounds3I permits Mutable, Immutable, View {
         @Override
         public int volume() {
             return lengthX() * lengthY() * lengthZ();
@@ -117,7 +131,8 @@ public sealed interface Bounds3I permits Bounds3I.Base {
             }
 
             return op(originX() + originOffsetX, originY() + originOffsetY, originZ() + originOffsetZ,
-                    lengthX() + lengthOffsetX, lengthY() + lengthOffsetY, lengthZ() + lengthOffsetZ);
+                    Math.max(lengthX() + lengthOffsetX, 0), Math.max(lengthY() + lengthOffsetY, 0), Math.max(lengthZ() +
+                            lengthOffsetZ, 0));
         }
 
         @Override
@@ -176,6 +191,11 @@ public sealed interface Bounds3I permits Bounds3I.Base {
             }
         }
 
+        @Override
+        public @NotNull Bounds3I mutableCopy() {
+            return new Mutable(originX(), originY(), originZ(), lengthX(), lengthY(), lengthZ());
+        }
+
         protected abstract @NotNull Bounds3I originOp(int x, int y, int z);
 
         protected abstract @NotNull Bounds3I op(int oX, int oY, int oZ, int lX, int lY, int lZ);
@@ -228,6 +248,16 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         @Override
         public int lengthZ() {
             return lZ;
+        }
+
+        @Override
+        public @NotNull Bounds3I immutable() {
+            return new Immutable(oX, oY, oZ, lX, lY, lZ);
+        }
+
+        @Override
+        public @NotNull Bounds3I immutableView() {
+            return new View(this);
         }
 
         @Override
@@ -301,8 +331,76 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
+        public @NotNull Bounds3I immutable() {
+            return this;
+        }
+
+        @Override
+        public @NotNull Bounds3I immutableView() {
+            return this;
+        }
+
+        @Override
         protected @NotNull Bounds3I originOp(int x, int y, int z) {
             return new Immutable(x, y, z, lX, lY, lZ);
+        }
+
+        @Override
+        protected @NotNull Bounds3I op(int oX, int oY, int oZ, int lX, int lY, int lZ) {
+            return new Immutable(oX, oY, oZ, lX, lY, lZ);
+        }
+    }
+
+    final class View extends Base {
+        private final Mutable mutable;
+
+        private View(Mutable mutable) {
+            this.mutable = mutable;
+        }
+
+        @Override
+        public int originX() {
+            return mutable.oX;
+        }
+
+        @Override
+        public int originY() {
+            return mutable.oY;
+        }
+
+        @Override
+        public int originZ() {
+            return mutable.oZ;
+        }
+
+        @Override
+        public int lengthX() {
+            return mutable.lX;
+        }
+
+        @Override
+        public int lengthY() {
+            return mutable.lY;
+        }
+
+        @Override
+        public int lengthZ() {
+            return mutable.lZ;
+        }
+
+        @Override
+        public @NotNull Bounds3I immutable() {
+            return new Immutable(mutable.oX, mutable.oY, mutable.oZ, mutable.lX, mutable.lY, mutable.lZ);
+        }
+
+        @Override
+        public @NotNull Bounds3I immutableView() {
+            return this;
+        }
+
+        @Override
+        protected @NotNull Bounds3I originOp(int x, int y, int z) {
+            return new Immutable(x, y, z, mutable.lX, mutable.lY, mutable.lZ);
         }
 
         @Override
