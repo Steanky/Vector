@@ -57,6 +57,16 @@ public sealed interface Vec3I permits Vec3I.Base {
     }
 
     /**
+     * Adds the same value to each of this vector's components.
+     *
+     * @param c the value to add
+     * @return a vector made from adding the given value to each component of this vector
+     */
+    default @NotNull Vec3I add(int c) {
+        return add(c, c, c);
+    }
+
+    /**
      * Subtracts another vector from this one.
      *
      * @param x the x-component to subtract
@@ -70,10 +80,20 @@ public sealed interface Vec3I permits Vec3I.Base {
      * Subtracts another vector from this one.
      *
      * @param other the vector to subtract from this one
-     * @return the difference of this vector and another
+     * @return the difference between this vector and another
      */
     default @NotNull Vec3I sub(@NotNull Vec3I other) {
         return sub(other.getX(), other.getY(), other.getZ());
+    }
+
+    /**
+     * Subtracts the same value from each of this vector's components.
+     *
+     * @param c the value to subtract
+     * @return a vector made from subtracting the given value from each component of this vector
+     */
+    default @NotNull Vec3I sub(int c) {
+        return sub(c, c, c);
     }
 
     /**
@@ -99,6 +119,16 @@ public sealed interface Vec3I permits Vec3I.Base {
     }
 
     /**
+     * Multiplies this vector by a scalar.
+     *
+     * @param c the scalar to multiply by
+     * @return the product of this vector and a scalar
+     */
+    default @NotNull Vec3I mul(int c) {
+        return mul(c, c, c);
+    }
+
+    /**
      * Divides this vector by another. This is performed by dividing each component of this vector by the equivalent
      * component of the given vector.
      *
@@ -108,6 +138,28 @@ public sealed interface Vec3I permits Vec3I.Base {
      * @return the quotient of this vector and another
      */
     @NotNull Vec3I div(int x, int y, int z);
+
+    /**
+     * Divides this vector by another. This is performed by dividing each component of this vector by the equivalent
+     * component of the given vector.
+     *
+     * @param other the vector to divide this one by
+     * @return the quotient of this vector and another
+     */
+    default @NotNull Vec3I div(@NotNull Vec3I other) {
+        return div(other.getX(), other.getY(), other.getZ());
+    }
+
+
+    /**
+     * Divides this vector by a scalar.
+     *
+     * @param c the scalar to divide by
+     * @return the quotient of this vector and the scalar
+     */
+    default @NotNull Vec3I div(int c) {
+        return div(c, c, c);
+    }
 
     /**
      * The length of this vector (distance from the origin). Expected to be slower than {@link Vec3I#lengthSquared()}
@@ -165,17 +217,6 @@ public sealed interface Vec3I permits Vec3I.Base {
     }
 
     /**
-     * Divides this vector by another. This is performed by dividing each component of this vector by the equivalent
-     * component of the given vector.
-     *
-     * @param other the vector to divide this one by
-     * @return the quotient of this vector and another
-     */
-    default @NotNull Vec3I div(@NotNull Vec3I other) {
-        return div(other.getX(), other.getY(), other.getZ());
-    }
-
-    /**
      * Returns the dot product of this vector and another.
      *
      * @param x the x-component
@@ -206,11 +247,35 @@ public sealed interface Vec3I permits Vec3I.Base {
     @NotNull Vec3I cross(int x, int y, int z);
 
     /**
+     * Returns the cross product of this vector and another.
+     *
+     * @param other the other vector
+     * @return the cross product of this vector and another
+     */
+    default @NotNull Vec3I cross(@NotNull Vec3I other) {
+        return cross(other.getX(), other.getY(), other.getZ());
+    }
+
+    /**
      * Creates a new, mutable copy of this vector.
      *
      * @return a new, mutable copy of this vector
      */
     @NotNull Vec3I mutable();
+
+    /**
+     * If this vector is mutable, returns this vector. Otherwise, creates a new mutable vector with the same components
+     * as this one, and returns it.
+     *
+     * @return a mutable vector with the same components as this one
+     */
+    default @NotNull Vec3I ensureMutable() {
+        if (this instanceof Mutable) {
+            return this;
+        }
+
+        return mutable();
+    }
 
     /**
      * Creates an immutable copy of this vector if it is mutable; if it is immutable, returns this vector.

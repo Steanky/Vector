@@ -211,10 +211,13 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
     public void putAll(@NotNull Vec3I2ObjectMap<? extends T> map) {
+        Objects.requireNonNull(map);
         if (map instanceof HashVec3I2ObjectMap<?> other) {
+            //we can do a more efficient put by directly accessing the underlying map
             underlyingMap.putAll((Map<? extends Long, ? extends T>) other.underlyingMap);
         }
         else {
+            //don't put one-by-one, this could result in lots of table resizing for large maps
             Map.Entry[] entries = map.entrySet().toArray(Entry[]::new);
             for (int i = 0; i < entries.length; i++) {
                 Map.Entry old = entries[i];
@@ -295,8 +298,8 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
                     @Override
                     public Entry<Vec3I, T> next() {
                         Long2ObjectMap.Entry<T> next = iterator.next();
-                        long nextKey = next.getLongKey();
 
+                        long nextKey = next.getLongKey();
                         Vec3I key = unpack(nextKey);
                         return new Entry<>() {
                             @Override
@@ -334,8 +337,8 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
                     return false;
                 }
 
-                return entrySet.remove(new AbstractLong2ObjectMap.BasicEntry<>(pack(vec.getX(), vec.getY(),
-                        vec.getZ()), entry.getValue()));
+                return entrySet.remove(new AbstractLong2ObjectMap.BasicEntry<>(pack(vec.getX(), vec.getY(), vec.getZ()),
+                        entry.getValue()));
             }
 
             @Override
