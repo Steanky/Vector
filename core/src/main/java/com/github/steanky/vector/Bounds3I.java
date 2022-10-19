@@ -15,6 +15,18 @@ public sealed interface Bounds3I permits Bounds3I.Base {
 
     int lengthZ();
 
+    default int maxX() {
+        return originX() + lengthX();
+    }
+
+    default int maxY() {
+        return originY() + lengthY();
+    }
+
+    default int maxZ() {
+        return originZ() + lengthZ();
+    }
+
     int volume();
 
     @NotNull Bounds3I setOrigin(int x, int y, int z);
@@ -47,7 +59,140 @@ public sealed interface Bounds3I permits Bounds3I.Base {
 
     @NotNull Bounds3I immutableView();
 
+    static @NotNull Bounds3I enclosingImmutable(@NotNull Bounds3I bounds) {
+        return bounds.immutable();
+    }
+
+    static @NotNull Bounds3I enclosingImmutable(@NotNull Bounds3I first, @NotNull Bounds3I second) {
+        return Base.enclosingFromPair(false, first, second);
+    }
+
+    static @NotNull Bounds3I enclosingImmutable(@NotNull Bounds3I @NotNull ... bounds) {
+        return Base.enclosingFromArray(false, bounds);
+    }
+
+    static @NotNull Bounds3I enclosingMutable(@NotNull Bounds3I bounds) {
+        return bounds.mutableCopy();
+    }
+
+    static @NotNull Bounds3I enclosingMutable(@NotNull Bounds3I first, @NotNull Bounds3I second) {
+        return Base.enclosingFromPair(true, first, second);
+    }
+
+    static @NotNull Bounds3I enclosingMutable(@NotNull Bounds3I @NotNull ... bounds) {
+        return Base.enclosingFromArray(true, bounds);
+    }
+
+    static @NotNull Bounds3I immutable(int x, int y, int z, int lX, int lY, int lZ) {
+        Base.validateLengths(lX, lY, lZ);
+        return new Immutable(x, y, z, lX, lY, lZ);
+    }
+
+    static @NotNull Bounds3I immutable(@NotNull Vec3I origin, @NotNull Vec3I lengths) {
+        int lX = lengths.x();
+        int lY = lengths.y();
+        int lZ = lengths.z();
+
+        Base.validateLengths(lX, lY, lZ);
+        return new Immutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
+    }
+
+    static @NotNull Bounds3I immutable(@NotNull Vec3I origin, int lX, int lY, int lZ) {
+        Base.validateLengths(lX, lY, lZ);
+        return new Immutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
+    }
+
+    static @NotNull Bounds3I immutable(int x, int y, int z, @NotNull Vec3I lengths) {
+        int lX = lengths.x();
+        int lY = lengths.y();
+        int lZ = lengths.z();
+
+        Base.validateLengths(lX, lY, lZ);
+        return new Immutable(x, y, z, lX, lY, lZ);
+    }
+
+    static @NotNull Bounds3I mutable(int x, int y, int z, int lX, int lY, int lZ) {
+        Base.validateLengths(lX, lY, lZ);
+        return new Mutable(x, y, z, lX, lY, lZ);
+    }
+
+    static @NotNull Bounds3I mutable(@NotNull Vec3I origin, @NotNull Vec3I lengths) {
+        int lX = lengths.x();
+        int lY = lengths.y();
+        int lZ = lengths.z();
+
+        Base.validateLengths(lX, lY, lZ);
+        return new Mutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
+    }
+
+    static @NotNull Bounds3I mutable(@NotNull Vec3I origin, int lX, int lY, int lZ) {
+        Base.validateLengths(lX, lY, lZ);
+        return new Mutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
+    }
+
+    static @NotNull Bounds3I mutable(int x, int y, int z, @NotNull Vec3I lengths) {
+        int lX = lengths.x();
+        int lY = lengths.y();
+        int lZ = lengths.z();
+
+        Base.validateLengths(lX, lY, lZ);
+        return new Mutable(x, y, z, lX, lY, lZ);
+    }
+
     abstract sealed class Base implements Bounds3I permits Mutable, Immutable, View {
+        private static void validateLengths(int x, int y, int z) {
+            if (x < 0 || y < 0 || z < 0) {
+                throw new IllegalArgumentException("Negative lengths are not allowed");
+            }
+        }
+
+        private static Bounds3I enclosingFromPair(boolean mutable, Bounds3I first, Bounds3I second) {
+            int minX = Math.min(first.originX(), second.originX());
+            int minY = Math.min(first.originY(), second.originY());
+            int minZ = Math.min(first.originZ(), second.originZ());
+
+            int maxX = Math.max(first.maxX(), second.maxX());
+            int maxY = Math.max(first.maxY(), second.maxY());
+            int maxZ = Math.max(first.maxZ(), second.maxZ());
+
+            return mutable ? new Mutable(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ) :
+                    new Immutable(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ);
+        }
+
+        private static Bounds3I enclosingFromArray(boolean mutable, Bounds3I ... bounds) {
+            if (bounds.length == 0) {
+                throw new IllegalArgumentException("Must provide at least one region");
+            }
+
+            Bounds3I first = bounds[0];
+            if (bounds.length == 1) {
+                return mutable ? first.mutableCopy() : first.immutable();
+            }
+
+            int minX = first.originX();
+            int minY = first.originY();
+            int minZ = first.originZ();
+
+            int maxX = first.maxX();
+            int maxY = first.maxY();
+            int maxZ = first.maxZ();
+
+            for (int i = 1; i < bounds.length; i++) {
+                Bounds3I sample = bounds[i];
+
+                minX = Math.min(minX, sample.originX());
+                minY = Math.min(minY, sample.originY());
+                minZ = Math.min(minZ, sample.originZ());
+
+                maxX = Math.max(maxX, sample.maxX());
+                maxY = Math.max(maxY, sample.maxY());
+                maxZ = Math.max(maxZ, sample.maxZ());
+            }
+
+            return mutable ? new Mutable(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ) :
+                    new Immutable(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ);
+        }
+
         @Override
         public int volume() {
             return lengthX() * lengthY() * lengthZ();
@@ -147,13 +292,13 @@ public sealed interface Bounds3I permits Bounds3I.Base {
 
         @Override
         public boolean overlaps(@NotNull Bounds3I other) {
-            int nx1 = originX() + lengthX();
-            int ny1 = originY() + lengthY();
-            int nz1 = originZ() + lengthZ();
+            int nx1 = maxX();
+            int ny1 = maxY();
+            int nz1 = maxZ();
 
-            int nx2 = other.originX() + other.lengthX();
-            int ny2 = other.originY() + other.lengthY();
-            int nz2 = other.originZ() + other.lengthZ();
+            int nx2 = other.maxX();
+            int ny2 = other.maxY();
+            int nz2 = other.maxZ();
 
             return Math.min(originX(), nx1) < Math.max(other.originX(), nx2) &&
                     Math.max(originX(), nx1) > Math.min(other.originX(), nx2) &&
@@ -166,9 +311,9 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         @Override
         public boolean contains(@NotNull Vec3I vector) {
             if (vector.x() >= originX() && vector.y() >= originY() && vector.z() >= originZ()) {
-                int nx = originX() + lengthX();
-                int ny = originY() + lengthY();
-                int nz = originZ() + lengthZ();
+                int nx = maxX();
+                int ny = maxY();
+                int nz = maxZ();
 
                 return vector.x() < nx && vector.y() < ny && vector.z() < nz;
             }
@@ -178,9 +323,9 @@ public sealed interface Bounds3I permits Bounds3I.Base {
 
         @Override
         public void forEach(@NotNull Vec3IConsumer consumer) {
-            int nx = originX() + lengthX();
-            int ny = originY() + lengthY();
-            int nz = originZ() + lengthZ();
+            int nx = maxX();
+            int ny = maxY();
+            int nz = maxZ();
 
             for (int i = originX(); i < nx; i++) {
                 for (int j = originY(); j < ny; j++) {
