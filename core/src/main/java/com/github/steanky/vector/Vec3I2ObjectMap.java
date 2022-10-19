@@ -2,24 +2,23 @@ package com.github.steanky.vector;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.Map;
 
 /**
- * A {@link Map}-like object that stores values under integer-vector keys. This is more efficient than using a map of
- * {@link Vec3I} keys to some value, since there is no need to call {@link Object#equals(Object)} or
- * {@link Object#hashCode()} on the key vectors. Additionally, operations like
- * {@link Vec3I2ObjectMap#get(int, int, int)} do not require the creation of a potentially redundant object.
+ * A {@link Map} that stores values under integer-vector keys. This is more efficient than using a map of {@link Vec3I}
+ * keys to some value, since there is no need to call {@link Object#equals(Object)} or {@link Object#hashCode()} on the
+ * key vectors. Additionally, operations like {@link Vec3I2ObjectMap#get(int, int, int)} do not require the creation of
+ * a potentially redundant object.
  * <p>
- * Null keys are not possible due to their implementation as primitive integer triplets. Null values are supported, and
- * can be distinguished from the absence of a value using {@link Vec3I2ObjectMap#containsKey(int, int, int)}.
+ * Null keys are not supported. Null values are supported, and can be distinguished from the absence of a value using
+ * {@link Vec3I2ObjectMap#containsKey(int, int, int)}.
  * <p>
  * Implementations may, at their discretion, disallow any number of specific coordinates for use as keys, for example as
  * part of a size limitation scheme or due to restrictions inherent in their design.
  *
  * @param <T> the type of value stored in the map
  */
-public interface Vec3I2ObjectMap<T> {
+public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
     /**
      * Gets the value at a specific coordinate.
      *
@@ -76,17 +75,4 @@ public interface Vec3I2ObjectMap<T> {
      * to the map
      */
     T computeIfAbsent(int x, int y, int z, @NotNull Vec3IFunction<? extends T> mappingFunction);
-
-    /**
-     * Removes all entries from the map.
-     */
-    void clear();
-
-    /**
-     * Returns a collection containing all values of the map. The collection should be backed by the map, and
-     * vice-versa.
-     *
-     * @return a collection containing the values of the map
-     */
-    @NotNull Collection<T> values();
 }

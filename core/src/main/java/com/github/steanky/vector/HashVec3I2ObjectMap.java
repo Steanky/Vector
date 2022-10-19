@@ -1,19 +1,20 @@
 package com.github.steanky.vector;
 
 import it.unimi.dsi.fastutil.Hash;
+import it.unimi.dsi.fastutil.longs.AbstractLong2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Implementation of {@link Vec3I2ObjectMap} based on an internal {@link Long2ObjectOpenHashMap}.
  *
  * @param <T> the type of object held in the map
  */
-public class HashVec3I2ObjectMap<T> implements Vec3I2ObjectMap<T> {
+public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     private final Long2ObjectMap<T> underlyingMap;
 
     private final int x;
@@ -142,6 +143,14 @@ public class HashVec3I2ObjectMap<T> implements Vec3I2ObjectMap<T> {
                 ((z - this.z) & maskZ);
     }
 
+    private @NotNull Vec3I key(long key) {
+        int x = (int) ((key >>> (bitDepth + bitHeight)) & maskX);
+        int y = (int) ((key >>> bitDepth) & maskY);
+        int z = (int) (key & maskZ);
+
+        return Vec3I.immutable(x, y, z);
+    }
+
     @Override
     public T get(int x, int y, int z) {
         return underlyingMap.get(index(x, y, z));
@@ -176,5 +185,88 @@ public class HashVec3I2ObjectMap<T> implements Vec3I2ObjectMap<T> {
     @Override
     public @NotNull Collection<T> values() {
         return underlyingMap.values();
+    }
+
+    @Override
+    public int size() {
+        return underlyingMap.size();
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        return underlyingMap.containsValue(value);
+    }
+
+    @Override
+    public @NotNull Set<Entry<Vec3I, T>> entrySet() {
+        return new AbstractSet<>() {
+            private final ObjectSet<Long2ObjectMap.Entry<T>> entrySet = underlyingMap.long2ObjectEntrySet();
+
+            @Override
+            public Iterator<Entry<Vec3I, T>> iterator() {
+                return new Iterator<>() {
+                    private final Iterator<Long2ObjectMap.Entry<T>> iterator = entrySet.iterator();
+
+                    @Override
+                    public boolean hasNext() {
+                        return iterator.hasNext();
+                    }
+
+                    @Override
+                    public Entry<Vec3I, T> next() {
+                        Long2ObjectMap.Entry<T> next = iterator.next();
+                        long nextKey = next.getLongKey();
+
+                        Vec3I key = key(nextKey);
+                        return new Entry<>() {
+                            @Override
+                            public Vec3I getKey() {
+                                return key;
+                            }
+
+                            @Override
+                            public T getValue() {
+                                return next.getValue();
+                            }
+
+                            @Override
+                            public T setValue(T value) {
+                                return next.setValue(value);
+                            }
+                        };
+                    }
+
+                    @Override
+                    public void remove() {
+                        iterator.remove();
+                    }
+                };
+            }
+
+            @Override
+            public boolean remove(Object o) {
+                if (!(o instanceof Entry<?, ?> entry)) {
+                    return false;
+                }
+
+                Object keyObject = entry.getKey();
+                if (!(keyObject instanceof Vec3I vec)) {
+                    return false;
+                }
+
+                return entrySet.remove(new AbstractLong2ObjectMap.BasicEntry<>(index(vec.getX(), vec.getY(),
+                        vec.getZ()), entry.getValue()));
+            }
+
+            @Override
+            public void clear() {
+                underlyingMap.clear();
+            }
+
+            @Override
+            public int size() {
+                return underlyingMap.size();
+            }
+        };
     }
 }

@@ -8,6 +8,9 @@ import org.jetbrains.annotations.NotNull;
  * <p>
  * Other mutating operations, such as {@link Vec3I#add(int, int, int)}, are mutating if the vector is mutable, but will
  * otherwise create and return a new immutable vector.
+ * <p>
+ * Implementations of this interface can be obtained by calling {@link Vec3I#immutable(int, int, int)} or
+ * {@link Vec3I#mutable(int, int, int)}.
  */
 public sealed interface Vec3I permits Vec3I.Base {
     /**
@@ -36,9 +39,9 @@ public sealed interface Vec3I permits Vec3I.Base {
     /**
      * Adds a vector to this one.
      *
-     * @param x the x-component
-     * @param y the y-component
-     * @param z the z-component
+     * @param x the x-component to add
+     * @param y the y-component to add
+     * @param z the z-component to add
      * @return the sum of this vector and the provided coordinates
      */
     @NotNull Vec3I add(int x, int y, int z);
@@ -158,7 +161,7 @@ public sealed interface Vec3I permits Vec3I.Base {
      * @return the squared distance between this vector and the other
      */
     default double distanceSquaredTo(@NotNull Vec3I other) {
-        return distanceTo(other.getX(), other.getY(), other.getZ());
+        return distanceSquaredTo(other.getX(), other.getY(), other.getZ());
     }
 
     /**
@@ -171,6 +174,50 @@ public sealed interface Vec3I permits Vec3I.Base {
     default @NotNull Vec3I div(@NotNull Vec3I other) {
         return div(other.getX(), other.getY(), other.getZ());
     }
+
+    /**
+     * Returns the dot product of this vector and another.
+     *
+     * @param x the x-component
+     * @param y the y-component
+     * @param z the z-component
+     * @return the dot product of this vector and another
+     */
+    int dot(int x, int y, int z);
+
+    /**
+     * Returns the dot product of this vector and another.
+     *
+     * @param other the other vector
+     * @return the dot product of this vector and another
+     */
+    default int dot(@NotNull Vec3I other) {
+        return dot(other.getX(), other.getY(), other.getZ());
+    }
+
+    /**
+     * Returns the cross product of this vector and another.
+     *
+     * @param x the x-component
+     * @param y the y-component
+     * @param z the z-component
+     * @return the cross product of this vector and another
+     */
+    @NotNull Vec3I cross(int x, int y, int z);
+
+    /**
+     * Creates a new, mutable copy of this vector.
+     *
+     * @return a new, mutable copy of this vector
+     */
+    @NotNull Vec3I mutable();
+
+    /**
+     * Creates an immutable copy of this vector if it is mutable; if it is immutable, returns this vector.
+     *
+     * @return an immutable copy of this vector, or this same vector if it is immutable
+     */
+    @NotNull Vec3I immutable();
 
     /**
      * Sets the value of this vector.
@@ -329,13 +376,36 @@ public sealed interface Vec3I permits Vec3I.Base {
 
         @Override
         public double distanceSquaredTo(int x, int y, int z) {
-            long dX = (long)x - getX();
-            long dY = (long)y - getY();
-            long dZ = (long)z - getZ();
+            int dX = x - getX();
+            int dY = x - getY();
+            int dZ = x - getZ();
 
             return dX * dX + dY * dY + dZ * dZ;
         }
 
+        @Override
+        public int dot(int x, int y, int z) {
+            return x * getX() + y * getY() + z * getZ();
+        }
+
+        @Override
+        public @NotNull Vec3I cross(int x, int y, int z) {
+            int oX = getX();
+            int oY = getY();
+            int oZ = getZ();
+
+            return op(oY * z - oZ * y, oZ * x - oX * z, oX * y - oY * x);
+        }
+
+        /**
+         * Performs an operation on this vector. This may either create and return new vector, or modify and return the
+         * current vector.
+         *
+         * @param x the x-coordinate
+         * @param y the y-coordinate
+         * @param z the z-coordinate
+         * @return this vector if mutable, or a new immutable vector
+         */
         protected abstract @NotNull Vec3I op(int x, int y, int z);
     }
 
@@ -375,10 +445,20 @@ public sealed interface Vec3I permits Vec3I.Base {
             return z;
         }
 
+        @Override
+        public @NotNull Vec3I mutable() {
+            return new Mutable(x, y, z);
+        }
+
+        @Override
+        public @NotNull Vec3I immutable() {
+            return this;
+        }
+
 
         @Override
         protected @NotNull Vec3I op(int x, int y, int z) {
-            return immutable(x, y, z);
+            return Vec3I.immutable(x, y, z);
         }
     }
 
@@ -416,6 +496,16 @@ public sealed interface Vec3I permits Vec3I.Base {
         @Override
         public int getZ() {
             return z;
+        }
+
+        @Override
+        public @NotNull Vec3I mutable() {
+            return new Mutable(x, y, z);
+        }
+
+        @Override
+        public @NotNull Vec3I immutable() {
+            return Vec3I.immutable(x, y, z);
         }
 
         @Override
