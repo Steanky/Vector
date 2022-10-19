@@ -556,30 +556,30 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * An immutable view of a mutable vector.
      */
     final class View extends Base {
-        private final Mutable mutable;
+        private final Mutable target;
 
-        private View(Mutable mutable) {
-            this.mutable = mutable;
+        private View(Mutable target) {
+            this.target = target;
         }
 
         @Override
         public int x() {
-            return mutable.x;
+            return target.x;
         }
 
         @Override
         public int y() {
-            return mutable.y;
+            return target.y;
         }
 
         @Override
         public int z() {
-            return mutable.z;
+            return target.z;
         }
 
         @Override
         public @NotNull Vec3I immutable() {
-            return VecCache.cached(mutable.x, mutable.y, mutable.z);
+            return VecCache.cached(target.x, target.y, target.z);
         }
 
         @Override
@@ -590,6 +590,11 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
         @Override
         protected @NotNull Vec3I op(int x, int y, int z) {
             return VecCache.cached(x, y, z);
+        }
+
+        @Override
+        public String toString() {
+            return "Vec3I.View{target=" + target + "}";
         }
     }
 
@@ -643,6 +648,11 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
         @Override
         protected @NotNull Vec3I op(int x, int y, int z) {
             return VecCache.cached(x, y, z);
+        }
+
+        @Override
+        public String toString() {
+            return "Vec3I.Immutable{x=" + x + ", y=" + y + ", z=" + z + "}";
         }
     }
 
@@ -724,6 +734,11 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
             this.y = y;
             this.z = z;
             return this;
+        }
+
+        @Override
+        public String toString() {
+            return "Vec3I.Mutable{x=" + x + ", y=" + y + ", z=" + z + "}";
         }
     }
 }

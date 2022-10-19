@@ -140,6 +140,36 @@ public sealed interface Bounds3I permits Bounds3I.Base {
     }
 
     abstract sealed class Base implements Bounds3I permits Mutable, Immutable, View {
+        private static final int HASH_PRIME = 31;
+
+        @Override
+        public final int hashCode() {
+            int result = HASH_PRIME + originX();
+            result = HASH_PRIME * result + originY();
+            result = HASH_PRIME * result + originZ();
+            result = HASH_PRIME * result + lengthX();
+            result = HASH_PRIME * result + lengthY();
+            return HASH_PRIME * result + lengthZ();
+        }
+
+        @Override
+        public final boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+
+            if (obj == this) {
+                return true;
+            }
+
+            if (obj instanceof Bounds3I other) {
+                return originX() == other.originX() && originY() == other.originY() && originZ() == other.originZ()
+                        && lengthX() == other.lengthX() && lengthY() == other.lengthY() && lengthZ() == other.lengthZ();
+            }
+
+            return false;
+        }
+
         private static void validateLengths(int x, int y, int z) {
             if (x < 0 || y < 0 || z < 0) {
                 throw new IllegalArgumentException("Negative lengths are not allowed");

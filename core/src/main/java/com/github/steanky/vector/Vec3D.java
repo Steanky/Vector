@@ -506,30 +506,30 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * An immutable view of a mutable vector.
      */
     final class View extends Base {
-        private final Mutable mutable;
+        private final Mutable target;
 
-        private View(Mutable mutable) {
-            this.mutable = mutable;
+        private View(Mutable target) {
+            this.target = target;
         }
 
         @Override
         public double x() {
-            return mutable.x;
+            return target.x;
         }
 
         @Override
         public double y() {
-            return mutable.y;
+            return target.y;
         }
 
         @Override
         public double z() {
-            return mutable.z;
+            return target.z;
         }
 
         @Override
         public @NotNull Vec3D immutable() {
-            return new Immutable(mutable.x, mutable.y, mutable.z);
+            return new Immutable(target.x, target.y, target.z);
         }
 
         @Override
@@ -540,6 +540,11 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
         @Override
         protected @NotNull Vec3D op(double x, double y, double z) {
             return new Immutable(x, y, z);
+        }
+
+        @Override
+        public String toString() {
+            return "Vec3D.View{target=" + target + "}";
         }
     }
 
@@ -592,6 +597,11 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
         @Override
         protected @NotNull Vec3D op(double x, double y, double z) {
             return new Immutable(x, y, z);
+        }
+
+        @Override
+        public String toString() {
+            return "Vec3D.Immutable{x=" + x + ", y=" + y + ", z=" + z + "}";
         }
     }
 
@@ -673,6 +683,11 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
             this.y = y;
             this.z = z;
             return this;
+        }
+
+        @Override
+        public String toString() {
+            return "Vec3D.Mutable{x=" + x + ", y=" + y + ", z=" + z + "}";
         }
     }
 }
