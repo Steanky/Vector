@@ -8,6 +8,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 /**
  * Implementation of {@link Vec3I2ObjectMap} based on an internal {@link Long2ObjectOpenHashMap}.
@@ -137,44 +138,123 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
         return Integer.numberOfTrailingZeros(highestBit) + 1;
     }
 
-    private long index(long x, long y, int z) {
+    private long pack(long x, long y, int z) {
         return (((x - this.x) & maskX) << (bitHeight + bitDepth)) |
                 (((y - this.y) & maskY) << bitDepth) |
                 ((z - this.z) & maskZ);
     }
 
-    private @NotNull Vec3I key(long key) {
-        int x = (int) ((key >>> (bitDepth + bitHeight)) & maskX);
-        int y = (int) ((key >>> bitDepth) & maskY);
-        int z = (int) (key & maskZ);
+    private @NotNull Vec3I unpack(long key) {
+        return Vec3I.immutable(x(key), y(key), z(key));
+    }
 
-        return Vec3I.immutable(x, y, z);
+    private int x(long key) {
+        return (int) ((key >>> (bitDepth + bitHeight)) & maskX);
+    }
+
+    private int y(long key) {
+        return (int) ((key >>> bitDepth) & maskY);
+    }
+
+    private int z(long key) {
+        return (int) (key & maskZ);
     }
 
     @Override
     public T get(int x, int y, int z) {
-        return underlyingMap.get(index(x, y, z));
+        return underlyingMap.get(pack(x, y, z));
     }
 
     @Override
     public T put(int x, int y, int z, T value) {
-        return underlyingMap.put(index(x, y, z), value);
+        return underlyingMap.put(pack(x, y, z), value);
     }
 
     @Override
     public T remove(int x, int y, int z) {
-        return underlyingMap.remove(index(x, y, z));
+        return underlyingMap.remove(pack(x, y, z));
+    }
+
+    @Override
+    public boolean remove(int x, int y, int z, Object value) {
+        return underlyingMap.remove(pack(x, y, z), value);
     }
 
     @Override
     public boolean containsKey(int x, int y, int z) {
-        return underlyingMap.containsKey(index(x, y, z));
+        return underlyingMap.containsKey(pack(x, y, z));
     }
 
     @Override
     public T computeIfAbsent(int x, int y, int z, @NotNull Vec3IFunction<? extends T> mappingFunction) {
-        Objects.requireNonNull(mappingFunction, "mappingFunction");
-        return underlyingMap.computeIfAbsent(index(x, y, z), ignored -> mappingFunction.apply(x, y, z));
+        Objects.requireNonNull(mappingFunction);
+        return underlyingMap.computeIfAbsent(pack(x, y, z), ignored -> mappingFunction.apply(x, y, z));
+    }
+
+    @Override
+    public T computeIfPresent(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        return underlyingMap.computeIfPresent(pack(x, y, z), (ignored, t) -> remappingFunction.apply(x, y, z, t));
+    }
+
+    @Override
+    public T compute(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        return underlyingMap.compute(pack(x, y, z), (ignored, t) -> remappingFunction.apply(x, y, z, t));
+    }
+
+    @Override
+    public T putIfAbsent(int x, int y, int z, T value) {
+        return underlyingMap.putIfAbsent(pack(x, y, z), value);
+    }
+
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Override
+    public void putAll(@NotNull Vec3I2ObjectMap<? extends T> map) {
+        if (map instanceof HashVec3I2ObjectMap<?> other) {
+            underlyingMap.putAll((Map<? extends Long, ? extends T>) other.underlyingMap);
+        }
+        else {
+            Map.Entry[] entries = map.entrySet().toArray(Entry[]::new);
+            for (int i = 0; i < entries.length; i++) {
+                Map.Entry old = entries[i];
+                Vec3I vector = (Vec3I) old.getKey();
+
+                entries[i] = Map.entry(pack(vector.getX(), vector.getY(), vector.getZ()), old.getValue());
+            }
+
+            underlyingMap.putAll(Map.ofEntries(entries));
+        }
+    }
+
+    @Override
+    public T replace(int x, int y, int z, T value) {
+        return underlyingMap.replace(pack(x, y, z), value);
+    }
+
+    @Override
+    public boolean replace(int x, int y, int z, T oldValue, T newValue) {
+        return underlyingMap.replace(pack(x, y, z), oldValue, newValue);
+    }
+
+    @Override
+    public void replaceAll(@NotNull Vec3IBiFunction<? super T, ? extends T> function) {
+        underlyingMap.replaceAll((l, t) -> function.apply(x(l), y(l), z(l), t));
+    }
+
+    @Override
+    public T getOrDefault(int x, int y, int z, T def) {
+        return underlyingMap.getOrDefault(pack(x, y, z), def);
+    }
+
+    @Override
+    public T merge(int x, int y, int z, T value, @NotNull BiFunction<? super T, ? super T, ? extends T> mergeFunction) {
+        return underlyingMap.merge(pack(x, y, z), value, mergeFunction);
+    }
+
+    @Override
+    public void forEach(@NotNull Vec3IBiConsumer<? super T> consumer) {
+        underlyingMap.forEach((l, t) -> consumer.accept(x(l), y(l), z(l), t));
     }
 
     @Override
@@ -217,7 +297,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
                         Long2ObjectMap.Entry<T> next = iterator.next();
                         long nextKey = next.getLongKey();
 
-                        Vec3I key = key(nextKey);
+                        Vec3I key = unpack(nextKey);
                         return new Entry<>() {
                             @Override
                             public Vec3I getKey() {
@@ -254,7 +334,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
                     return false;
                 }
 
-                return entrySet.remove(new AbstractLong2ObjectMap.BasicEntry<>(index(vec.getX(), vec.getY(),
+                return entrySet.remove(new AbstractLong2ObjectMap.BasicEntry<>(pack(vec.getX(), vec.getY(),
                         vec.getZ()), entry.getValue()));
             }
 

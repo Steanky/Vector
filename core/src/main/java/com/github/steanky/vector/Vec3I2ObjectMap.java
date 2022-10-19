@@ -3,6 +3,7 @@ package com.github.steanky.vector;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
+import java.util.function.BiFunction;
 
 /**
  * A {@link Map} that stores values under integer-vector keys. This is more efficient than using a map of {@link Vec3I}
@@ -53,6 +54,8 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      */
     T remove(int x, int y, int z);
 
+    boolean remove(int x, int y, int z, Object value);
+
     /**
      * Tests if the map contains a value at a coordinate.
      *
@@ -75,4 +78,24 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      * to the map
      */
     T computeIfAbsent(int x, int y, int z, @NotNull Vec3IFunction<? extends T> mappingFunction);
+
+    T computeIfPresent(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction);
+
+    T compute(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction);
+
+    T putIfAbsent(int x, int y, int z, T value);
+
+    void putAll(@NotNull Vec3I2ObjectMap<? extends T> map);
+
+    T replace(int x, int y, int z, T value);
+
+    boolean replace(int x, int y, int z, T oldValue, T newValue);
+
+    void replaceAll(@NotNull Vec3IBiFunction<? super T, ? extends T> function);
+
+    T getOrDefault(int x, int y, int z, T def);
+
+    T merge(int x, int y, int z, T value, @NotNull BiFunction<? super T, ? super T, ? extends T> mergeFunction);
+
+    void forEach(@NotNull Vec3IBiConsumer<? super T> consumer);
 }
