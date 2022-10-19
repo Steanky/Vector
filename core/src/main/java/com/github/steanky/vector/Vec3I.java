@@ -12,7 +12,7 @@ import org.jetbrains.annotations.NotNull;
  * Implementations of this interface can be obtained by calling {@link Vec3I#immutable(int, int, int)} or
  * {@link Vec3I#mutable(int, int, int)}.
  */
-public sealed interface Vec3I permits Vec3I.Base {
+public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
     /**
      * The immutable origin vector (0, 0, 0).
      */
@@ -261,7 +261,7 @@ public sealed interface Vec3I permits Vec3I.Base {
      *
      * @return a new, mutable copy of this vector
      */
-    @NotNull Vec3I mutable();
+    @NotNull Vec3I mutableCopy();
 
     /**
      * If this vector is mutable, returns this vector. Otherwise, creates a new mutable vector with the same components
@@ -274,7 +274,7 @@ public sealed interface Vec3I permits Vec3I.Base {
             return this;
         }
 
-        return mutable();
+        return mutableCopy();
     }
 
     /**
@@ -373,6 +373,30 @@ public sealed interface Vec3I permits Vec3I.Base {
     }
 
     /**
+     * Creates a mutable vector from the result of calling {@link Math#floor(double)} on each component.
+     *
+     * @param x the x-component
+     * @param y the y-component
+     * @param z the z-component
+     * @return a floored vector
+     */
+    static @NotNull Vec3I mutableFloored(double x, double y, double z) {
+        return mutable((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
+    }
+
+    /**
+     * Creates an immutable vector from the result of calling {@link Math#floor(double)} on each component.
+     *
+     * @param x the x-component
+     * @param y the y-component
+     * @param z the z-component
+     * @return a floored vector
+     */
+    static @NotNull Vec3I immutableFloored(double x, double y, double z) {
+        return Vec3ICache.cached((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
+    }
+
+    /**
      * Base class of both mutable and immutable Vec3I implementations. Provides common vector operations as well as
      * efficient {@link Object#equals(Object)} and {@link Object#hashCode()} implementations.
      */
@@ -405,6 +429,21 @@ public sealed interface Vec3I permits Vec3I.Base {
         }
 
         @Override
+        public int compareTo(@NotNull Vec3I o) {
+            int xComp = Integer.compare(getX(), o.getX());
+            if (xComp == 0) {
+                int yComp = Integer.compare(getY(), o.getY());
+                if (yComp == 0) {
+                    return Integer.compare(getZ(), o.getZ());
+                }
+
+                return yComp;
+            }
+
+            return xComp;
+        }
+
+        @Override
         public @NotNull Vec3I add(int x, int y, int z) {
             return op(getX() + x, getY() + y, getZ() + z);
         }
@@ -431,7 +470,7 @@ public sealed interface Vec3I permits Vec3I.Base {
 
         @Override
         public double lengthSquared() {
-            return (long)getX() * (long)getY() * (long)getZ();
+            return getX() * getY() * getZ();
         }
 
         @Override
@@ -463,8 +502,8 @@ public sealed interface Vec3I permits Vec3I.Base {
         }
 
         /**
-         * Performs an operation on this vector. This may either create and return new vector, or modify and return the
-         * current vector.
+         * Performs an operation on this vector. This may either create and return a new vector, or modify and return
+         * the current vector.
          *
          * @param x the x-coordinate
          * @param y the y-coordinate
@@ -511,7 +550,7 @@ public sealed interface Vec3I permits Vec3I.Base {
         }
 
         @Override
-        public @NotNull Vec3I mutable() {
+        public @NotNull Vec3I mutableCopy() {
             return new Mutable(x, y, z);
         }
 
@@ -523,7 +562,7 @@ public sealed interface Vec3I permits Vec3I.Base {
 
         @Override
         protected @NotNull Vec3I op(int x, int y, int z) {
-            return Vec3I.immutable(x, y, z);
+            return Vec3ICache.cached(x, y, z);
         }
     }
 
@@ -564,13 +603,13 @@ public sealed interface Vec3I permits Vec3I.Base {
         }
 
         @Override
-        public @NotNull Vec3I mutable() {
+        public @NotNull Vec3I mutableCopy() {
             return new Mutable(x, y, z);
         }
 
         @Override
         public @NotNull Vec3I immutable() {
-            return Vec3I.immutable(x, y, z);
+            return Vec3ICache.cached(x, y, z);
         }
 
         @Override
