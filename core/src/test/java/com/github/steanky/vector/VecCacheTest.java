@@ -4,20 +4,20 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class Vec3ICacheTest {
+class VecCacheTest {
     @Test
     void cachesAll() {
         for (int i = -4; i < 4; i++) {
             for (int j = -4; j < 4; j++) {
                 for (int k = -4; k < 4; k++) {
-                    Vec3I cached = Vec3ICache.cached(i, j, k);
+                    Vec3I cached = VecCache.cached(i, j, k);
 
                     assertNotNull(cached);
-                    assertEquals(i, cached.getX());
-                    assertEquals(j, cached.getY());
-                    assertEquals(k, cached.getZ());
+                    assertEquals(i, cached.x());
+                    assertEquals(j, cached.y());
+                    assertEquals(k, cached.z());
 
-                    assertSame(cached, Vec3ICache.cached(i, j, k));
+                    assertSame(cached, VecCache.cached(i, j, k));
                 }
             }
         }
@@ -25,8 +25,8 @@ class Vec3ICacheTest {
 
     @Test
     void cacheOutOfBounds() {
-        Vec3I outOfBounds = Vec3ICache.cached(0, 0, 5);
-        Vec3I outOfBounds2 = Vec3ICache.cached(0, 0, 5);
+        Vec3I outOfBounds = VecCache.cached(0, 0, 5);
+        Vec3I outOfBounds2 = VecCache.cached(0, 0, 5);
         assertNotSame(outOfBounds, outOfBounds2);
     }
 }

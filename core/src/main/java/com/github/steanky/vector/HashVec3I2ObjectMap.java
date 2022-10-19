@@ -223,7 +223,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
                 Map.Entry old = entries[i];
                 Vec3I vector = (Vec3I) old.getKey();
 
-                entries[i] = Map.entry(pack(vector.getX(), vector.getY(), vector.getZ()), old.getValue());
+                entries[i] = Map.entry(pack(vector.x(), vector.y(), vector.z()), old.getValue());
             }
 
             underlyingMap.putAll(Map.ofEntries(entries));
@@ -337,7 +337,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
                     return false;
                 }
 
-                return entrySet.remove(new AbstractLong2ObjectMap.BasicEntry<>(pack(vec.getX(), vec.getY(), vec.getZ()),
+                return entrySet.remove(new AbstractLong2ObjectMap.BasicEntry<>(pack(vec.x(), vec.y(), vec.z()),
                         entry.getValue()));
             }
 

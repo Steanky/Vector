@@ -22,7 +22,7 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
             return false;
         }
 
-        return containsKey(vec.getX(), vec.getY(), vec.getZ());
+        return containsKey(vec.x(), vec.y(), vec.z());
     }
 
     @Override
@@ -31,12 +31,12 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
             return null;
         }
 
-        return get(vec.getX(), vec.getY(), vec.getZ());
+        return get(vec.x(), vec.y(), vec.z());
     }
 
     @Override
     public final T put(@NotNull Vec3I key, T value) {
-        return put(key.getX(), key.getY(), key.getZ(), value);
+        return put(key.x(), key.y(), key.z(), value);
     }
 
     @Override
@@ -45,7 +45,7 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
             return null;
         }
 
-        return remove(vec.getX(), vec.getY(), vec.getZ());
+        return remove(vec.x(), vec.y(), vec.z());
     }
 
     @Override
@@ -54,7 +54,7 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
             return defaultValue;
         }
 
-        return getOrDefault(vec.getX(), vec.getY(), vec.getZ(), defaultValue);
+        return getOrDefault(vec.x(), vec.y(), vec.z(), defaultValue);
     }
 
     @Override
@@ -71,7 +71,7 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
 
     @Override
     public final T putIfAbsent(@NotNull Vec3I key, T value) {
-        return putIfAbsent(key.getX(), key.getY(), key.getZ(), value);
+        return putIfAbsent(key.x(), key.y(), key.z(), value);
     }
 
     @Override
@@ -80,23 +80,23 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
             return false;
         }
 
-        return remove(vec.getX(), vec.getY(), vec.getZ(), value);
+        return remove(vec.x(), vec.y(), vec.z(), value);
     }
 
     @Override
     public final boolean replace(@NotNull Vec3I key, T oldValue, T newValue) {
-        return replace(key.getX(), key.getY(), key.getZ(), oldValue, newValue);
+        return replace(key.x(), key.y(), key.z(), oldValue, newValue);
     }
 
     @Override
     public final T replace(@NotNull Vec3I key, T value) {
-        return replace(key.getX(), key.getY(), key.getZ(), value);
+        return replace(key.x(), key.y(), key.z(), value);
     }
 
     @Override
     public final T computeIfAbsent(@NotNull Vec3I key, @NotNull Function<? super Vec3I, ? extends T> mappingFunction) {
         Objects.requireNonNull(mappingFunction);
-        return computeIfAbsent(key.getX(), key.getY(), key.getZ(), (x, y, z) -> mappingFunction.apply(Vec3I
+        return computeIfAbsent(key.x(), key.y(), key.z(), (x, y, z) -> mappingFunction.apply(Vec3I
                 .immutable(x, y, z)));
     }
 
@@ -104,7 +104,7 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
     public final T computeIfPresent(@NotNull Vec3I key,
             @NotNull BiFunction<? super Vec3I, ? super T, ? extends T> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
-        return computeIfPresent(key.getX(), key.getY(), key.getZ(), (x, y, z, t) -> remappingFunction.apply(Vec3I
+        return computeIfPresent(key.x(), key.y(), key.z(), (x, y, z, t) -> remappingFunction.apply(Vec3I
                 .immutable(x, y, z), t));
     }
 
@@ -112,13 +112,13 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
     public final T compute(@NotNull Vec3I key,
             @NotNull BiFunction<? super Vec3I, ? super T, ? extends T> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
-        return compute(key.getX(), key.getY(), key.getZ(), (x, y, z, t) -> remappingFunction.apply(Vec3I
+        return compute(key.x(), key.y(), key.z(), (x, y, z, t) -> remappingFunction.apply(Vec3I
                 .immutable(x, y, z), t));
     }
 
     @Override
     public final T merge(@NotNull Vec3I key, @NotNull T value,
             @NotNull BiFunction<? super T, ? super T, ? extends T> remappingFunction) {
-        return merge(key.getX(), key.getY(), key.getZ(), value, remappingFunction);
+        return merge(key.x(), key.y(), key.z(), value, remappingFunction);
     }
 }

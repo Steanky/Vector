@@ -3,38 +3,38 @@ package com.github.steanky.vector;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * A representation of a three-dimensional mathematical vector with integer components. Supports both mutable and
- * immutable variants. Immutable vectors disallow all {@code set} operations.
+ * A representation of a three-dimensional mathematical vector with double precision components. Supports both mutable
+ * and immutable variants. Immutable vectors disallow all {@code set} operations.
  * <p>
- * Other mutating operations, such as {@link Vec3I#add(int, int, int)}, are mutating if the vector is mutable, but will
- * otherwise create and return a new immutable vector.
+ * Other mutating operations, such as {@link Vec3D#add(double, double, double)}, are mutating if the vector is mutable,
+ * but will otherwise create and return a new immutable vector.
  * <p>
- * Implementations of this interface can be obtained by calling {@link Vec3I#immutable(int, int, int)} or
- * {@link Vec3I#mutable(int, int, int)}.
+ * Implementations of this interface can be obtained by calling {@link Vec3D#immutable(double, double, double)} or
+ * {@link Vec3D#mutable(double, double, double)}.
  */
-public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
+public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
     /**
      * The immutable origin vector (0, 0, 0).
      */
-    Vec3I ORIGIN = VecCache.cached(0, 0, 0);
+    Vec3D ORIGIN = Vec3D.immutable(0, 0, 0);
 
     /**
      * The x-component of this vector.
      * @return the x-component of this vector
      */
-    int x();
+    double x();
 
     /**
      * The y-component of this vector.
      * @return the y-component of this vector
      */
-    int y();
+    double y();
 
     /**
      * The z-component of this vector.
      * @return the z-component of this vector
      */
-    int z();
+    double z();
 
     /**
      * Adds a vector to this one.
@@ -44,7 +44,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the z-component to add
      * @return the sum of this vector and the provided coordinates
      */
-    @NotNull Vec3I add(int x, int y, int z);
+    @NotNull Vec3D add(double x, double y, double z);
 
     /**
      * Adds a vector to this one.
@@ -52,7 +52,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param other the vector to add
      * @return the sum of this vector and another
      */
-    default @NotNull Vec3I add(@NotNull Vec3I other) {
+    default @NotNull Vec3D add(@NotNull Vec3D other) {
         return add(other.x(), other.y(), other.z());
     }
 
@@ -62,7 +62,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param c the value to add
      * @return a vector made from adding the given value to each component of this vector
      */
-    default @NotNull Vec3I add(int c) {
+    default @NotNull Vec3D add(double c) {
         return add(c, c, c);
     }
 
@@ -74,7 +74,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the z-component to subtract
      * @return the difference of this vector and another
      */
-    @NotNull Vec3I sub(int x, int y, int z);
+    @NotNull Vec3D sub(double x, double y, double z);
 
     /**
      * Subtracts another vector from this one.
@@ -82,7 +82,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param other the vector to subtract from this one
      * @return the difference between this vector and another
      */
-    default @NotNull Vec3I sub(@NotNull Vec3I other) {
+    default @NotNull Vec3D sub(@NotNull Vec3D other) {
         return sub(other.x(), other.y(), other.z());
     }
 
@@ -92,7 +92,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param c the value to subtract
      * @return a vector made from subtracting the given value from each component of this vector
      */
-    default @NotNull Vec3I sub(int c) {
+    default @NotNull Vec3D sub(double c) {
         return sub(c, c, c);
     }
 
@@ -105,7 +105,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the z-component to multiply by
      * @return the product of this vector and another
      */
-    @NotNull Vec3I mul(int x, int y, int z);
+    @NotNull Vec3D mul(double x, double y, double z);
 
     /**
      * Multiplies this vector by another. This is performed by multiplying each component of this vector by each
@@ -114,7 +114,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param other the vector to multiply with this one
      * @return the product of this vector and another
      */
-    default @NotNull Vec3I mul(@NotNull Vec3I other) {
+    default @NotNull Vec3D mul(@NotNull Vec3D other) {
         return mul(other.x(), other.y(),other.z());
     }
 
@@ -124,7 +124,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param c the scalar to multiply by
      * @return the product of this vector and a scalar
      */
-    default @NotNull Vec3I mul(int c) {
+    default @NotNull Vec3D mul(double c) {
         return mul(c, c, c);
     }
 
@@ -137,7 +137,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the z-component to divide by
      * @return the quotient of this vector and another
      */
-    @NotNull Vec3I div(int x, int y, int z);
+    @NotNull Vec3D div(double x, double y, double z);
 
     /**
      * Divides this vector by another. This is performed by dividing each component of this vector by the equivalent
@@ -146,7 +146,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param other the vector to divide this one by
      * @return the quotient of this vector and another
      */
-    default @NotNull Vec3I div(@NotNull Vec3I other) {
+    default @NotNull Vec3D div(@NotNull Vec3D other) {
         return div(other.x(), other.y(), other.z());
     }
 
@@ -157,12 +157,12 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param c the scalar to divide by
      * @return the quotient of this vector and the scalar
      */
-    default @NotNull Vec3I div(int c) {
+    default @NotNull Vec3D div(double c) {
         return div(c, c, c);
     }
 
     /**
-     * The length of this vector (distance from the origin). Expected to be slower than {@link Vec3I#lengthSquared()}
+     * The length of this vector (distance from the origin). Expected to be slower than {@link Vec3D#lengthSquared()}
      * due to requiring a {@link Math#sqrt(double)} call.
      *
      * @return the length of this vector
@@ -184,7 +184,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the z-component of the other vector
      * @return the distance between this vector and the other
      */
-    double distanceTo(int x, int y, int z);
+    double distanceTo(double x, double y, double z);
 
     /**
      * Computes the distance between this vector and another.
@@ -192,7 +192,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param other the other vector
      * @return the distance between this vector and the other
      */
-    default double distanceTo(@NotNull Vec3I other) {
+    default double distanceTo(@NotNull Vec3D other) {
         return distanceTo(other.x(), other.y(), other.z());
     }
 
@@ -204,7 +204,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the z-component of the other vector
      * @return the squared distance between this vector and the other
      */
-    double distanceSquaredTo(int x, int y, int z);
+    double distanceSquaredTo(double x, double y, double z);
 
     /**
      * Computes the squared distance between this vector and another.
@@ -212,7 +212,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param other the other vector
      * @return the squared distance between this vector and the other
      */
-    default double distanceSquaredTo(@NotNull Vec3I other) {
+    default double distanceSquaredTo(@NotNull Vec3D other) {
         return distanceSquaredTo(other.x(), other.y(), other.z());
     }
 
@@ -224,7 +224,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the z-component
      * @return the dot product of this vector and another
      */
-    int dot(int x, int y, int z);
+    double dot(double x, double y, double z);
 
     /**
      * Returns the dot product of this vector and another.
@@ -232,7 +232,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param other the other vector
      * @return the dot product of this vector and another
      */
-    default int dot(@NotNull Vec3I other) {
+    default double dot(@NotNull Vec3D other) {
         return dot(other.x(), other.y(), other.z());
     }
 
@@ -244,7 +244,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the z-component
      * @return the cross product of this vector and another
      */
-    @NotNull Vec3I cross(int x, int y, int z);
+    @NotNull Vec3D cross(double x, double y, double z);
 
     /**
      * Returns the cross product of this vector and another.
@@ -252,7 +252,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param other the other vector
      * @return the cross product of this vector and another
      */
-    default @NotNull Vec3I cross(@NotNull Vec3I other) {
+    default @NotNull Vec3D cross(@NotNull Vec3D other) {
         return cross(other.x(), other.y(), other.z());
     }
 
@@ -261,7 +261,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      *
      * @return a new, mutable copy of this vector
      */
-    @NotNull Vec3I mutableCopy();
+    @NotNull Vec3D mutableCopy();
 
     /**
      * If this vector is mutable, returns this vector. Otherwise, creates a new mutable vector with the same components
@@ -269,7 +269,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      *
      * @return a mutable vector with the same components as this one
      */
-    default @NotNull Vec3I ensureMutable() {
+    default @NotNull Vec3D ensureMutable() {
         if (this instanceof Mutable) {
             return this;
         }
@@ -282,15 +282,15 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      *
      * @return an immutable copy of this vector, or this same vector if it is immutable
      */
-    @NotNull Vec3I immutable();
+    @NotNull Vec3D immutable();
 
     /**
      * Creates an immutable view of this vector. If this vector is mutable, and is modified later, the changes will be
-     * visible in the returned vector. If this vector is already immutable (or a view), it is returned as-is.
+     * visible in the returned vector.
      *
      * @return an immutable view of this vector
      */
-    @NotNull Vec3I immutableView();
+    @NotNull Vec3D immutableView();
 
     /**
      * Sets the value of this vector.
@@ -300,7 +300,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the new z-coordinate
      * @return this instance, for chaining
      */
-    default @NotNull Vec3I set(int x, int y, int z) {
+    default @NotNull Vec3D set(double x, double y, double z) {
         throw new UnsupportedOperationException();
     }
 
@@ -310,7 +310,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param other the vector whose components will be used to set this vector's
      * @return this instance, for chaining
      */
-    default @NotNull Vec3I set(@NotNull Vec3I other) {
+    default @NotNull Vec3D set(@NotNull Vec3D other) {
         return set(other.x(), other.y(), other.z());
     }
 
@@ -320,7 +320,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the new x-coordinate
      * @return this instance, for chaining
      */
-    default @NotNull Vec3I setX(int x) {
+    default @NotNull Vec3D setX(double x) {
         throw new UnsupportedOperationException();
     }
 
@@ -330,7 +330,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param y the new y-coordinate
      * @return this instance, for chaining
      */
-    default @NotNull Vec3I setY(int y) {
+    default @NotNull Vec3D setY(double y) {
         throw new UnsupportedOperationException();
     }
 
@@ -340,7 +340,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the new z-coordinate
      * @return this instance, for chaining
      */
-    default @NotNull Vec3I setZ(int z) {
+    default @NotNull Vec3D setZ(double z) {
         throw new UnsupportedOperationException();
     }
 
@@ -352,8 +352,8 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      *
      * @return the shared thread local mutable vector
      */
-    static @NotNull Vec3I threadLocal() {
-        return VecCache.THREAD_LOCAL_3I.get();
+    static @NotNull Vec3D threadLocal() {
+        return VecCache.THREAD_LOCAL_3D.get();
     }
 
     /**
@@ -364,80 +364,34 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param z the initial z-component
      * @return a new mutable vector
      */
-    static @NotNull Vec3I mutable(int x, int y, int z) {
+    static @NotNull Vec3D mutable(double x, double y, double z) {
         return new Mutable(x, y, z);
     }
 
     /**
-     * Obtains an immutable vector for the provided coordinates. Common values, such as (0, 0, 0), may be cached.
+     * Obtains an immutable vector for the provided coordinates.
      *
      * @param x the x-component
      * @param y the y-component
      * @param z the z-component
      * @return an immutable vector
      */
-    static @NotNull Vec3I immutable(int x, int y, int z) {
-        return VecCache.cached(x, y, z);
+    static @NotNull Vec3D immutable(double x, double y, double z) {
+        return new Immutable(x, y, z);
     }
 
     /**
-     * Creates a mutable vector from the result of calling {@link Math#floor(double)} on each component.
-     *
-     * @param x the x-component
-     * @param y the y-component
-     * @param z the z-component
-     * @return a mutable floored vector
-     */
-    static @NotNull Vec3I mutableFloored(double x, double y, double z) {
-        return mutable((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
-    }
-
-    /**
-     * Creates a mutable vector from the result of calling {@link Math#floor(double)} on each component of the provided
-     * double-precision vector.
-     *
-     * @param other the double-precision vector
-     * @return a mutable floored vector
-     */
-    static @NotNull Vec3I mutableFloored(@NotNull Vec3D other) {
-        return mutableFloored(other.x(), other.y(), other.z());
-    }
-
-    /**
-     * Creates an immutable vector from the result of calling {@link Math#floor(double)} on each component.
-     *
-     * @param x the x-component
-     * @param y the y-component
-     * @param z the z-component
-     * @return an immutable floored vector
-     */
-    static @NotNull Vec3I immutableFloored(double x, double y, double z) {
-        return VecCache.cached((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
-    }
-
-    /**
-     * Creates an immutable vector from the result of calling {@link Math#floor(double)} on each component of the
-     * provided double-precision vector.
-     *
-     * @param other the double-precision vector
-     * @return an immutable floored vector
-     */
-    static @NotNull Vec3I immutableFloored(@NotNull Vec3D other) {
-        return immutableFloored(other.x(), other.y(), other.z());
-    }
-
-    /**
-     * Base class of both mutable and immutable Vec3I implementations. Provides common vector operations as well as
+     * Base class of both mutable and immutable Vec3D implementations. Provides common vector operations as well as
      * efficient {@link Object#equals(Object)} and {@link Object#hashCode()} implementations.
      */
-    abstract sealed class Base implements Vec3I permits Immutable, Mutable, View {
+    abstract sealed class Base implements Vec3D permits Immutable, Mutable, View {
         private static final int HASH_PRIME = 31;
 
         @Override
         public final int hashCode() {
-            int result = HASH_PRIME + x();
-            result = HASH_PRIME * result + y();
-            result = HASH_PRIME * result + z();
+            int result = HASH_PRIME + Double.hashCode(x());
+            result = HASH_PRIME * result + Double.hashCode(y());
+            result = HASH_PRIME * result + Double.hashCode(z());
             return result;
         }
 
@@ -451,7 +405,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
                 return true;
             }
 
-            if (obj instanceof Vec3I other) {
+            if (obj instanceof Vec3D other) {
                 return x() == other.x() && y() == other.y() && z() == other.z();
             }
 
@@ -459,12 +413,12 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
         }
 
         @Override
-        public final int compareTo(@NotNull Vec3I o) {
-            int xComp = Integer.compare(x(), o.x());
+        public final int compareTo(@NotNull Vec3D o) {
+            int xComp = Double.compare(x(), o.x());
             if (xComp == 0) {
-                int yComp = Integer.compare(y(), o.y());
+                int yComp = Double.compare(y(), o.y());
                 if (yComp == 0) {
-                    return Integer.compare(z(), o.z());
+                    return Double.compare(z(), o.z());
                 }
 
                 return yComp;
@@ -474,22 +428,22 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
         }
 
         @Override
-        public @NotNull Vec3I add(int x, int y, int z) {
+        public @NotNull Vec3D add(double x, double y, double z) {
             return op(x() + x, y() + y, z() + z);
         }
 
         @Override
-        public @NotNull Vec3I sub(int x, int y, int z) {
+        public @NotNull Vec3D sub(double x, double y, double z) {
             return op(x() - x, y() - y, z() - z);
         }
 
         @Override
-        public @NotNull Vec3I mul(int x, int y, int z) {
+        public @NotNull Vec3D mul(double x, double y, double z) {
             return op(x() * x, y() * y, z() * z);
         }
 
         @Override
-        public @NotNull Vec3I div(int x, int y, int z) {
+        public @NotNull Vec3D div(double x, double y, double z) {
             return op(x() / x, y() / y, z() / z);
         }
 
@@ -500,43 +454,39 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
 
         @Override
         public double lengthSquared() {
-            int x = x();
-            int y = y();
-            int z = z();
-
-            return x * x + y * y + z * z;
+            return x() * y() * z();
         }
 
         @Override
-        public double distanceTo(int x, int y, int z) {
+        public double distanceTo(double x, double y, double z) {
             return Math.sqrt(distanceSquaredTo(x, y, z));
         }
 
         @Override
-        public double distanceSquaredTo(int x, int y, int z) {
-            int dX = x - x();
-            int dY = x - y();
-            int dZ = x - z();
+        public double distanceSquaredTo(double x, double y, double z) {
+            double dX = x - x();
+            double dY = x - y();
+            double dZ = x - z();
 
             return dX * dX + dY * dY + dZ * dZ;
         }
 
         @Override
-        public int dot(int x, int y, int z) {
+        public double dot(double x, double y, double z) {
             return x * x() + y * y() + z * z();
         }
 
         @Override
-        public @NotNull Vec3I cross(int x, int y, int z) {
-            int oX = x();
-            int oY = y();
-            int oZ = z();
+        public @NotNull Vec3D cross(double x, double y, double z) {
+            double oX = x();
+            double oY = y();
+            double oZ = z();
 
             return op(oY * z - oZ * y, oZ * x - oX * z, oX * y - oY * x);
         }
 
         @Override
-        public @NotNull Vec3I mutableCopy() {
+        public @NotNull Vec3D mutableCopy() {
             return new Mutable(x(), y(), z());
         }
 
@@ -549,7 +499,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
          * @param z the z-coordinate
          * @return this vector if mutable, or a new immutable vector
          */
-        protected abstract @NotNull Vec3I op(int x, int y, int z);
+        protected abstract @NotNull Vec3D op(double x, double y, double z);
     }
 
     /**
@@ -563,33 +513,33 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
         }
 
         @Override
-        public int x() {
+        public double x() {
             return mutable.x;
         }
 
         @Override
-        public int y() {
+        public double y() {
             return mutable.y;
         }
 
         @Override
-        public int z() {
+        public double z() {
             return mutable.z;
         }
 
         @Override
-        public @NotNull Vec3I immutable() {
-            return VecCache.cached(mutable.x, mutable.y, mutable.z);
+        public @NotNull Vec3D immutable() {
+            return new Immutable(mutable.x, mutable.y, mutable.z);
         }
 
         @Override
-        public @NotNull Vec3I immutableView() {
+        public @NotNull Vec3D immutableView() {
             return this;
         }
 
         @Override
-        protected @NotNull Vec3I op(int x, int y, int z) {
-            return VecCache.cached(x, y, z);
+        protected @NotNull Vec3D op(double x, double y, double z) {
+            return new Immutable(x, y, z);
         }
     }
 
@@ -597,9 +547,9 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * The immutable vector type.
      */
     final class Immutable extends Base {
-        private final int x;
-        private final int y;
-        private final int z;
+        private final double x;
+        private final double y;
+        private final double z;
 
         /**
          * Constructs a new immutable vector.
@@ -608,41 +558,40 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
          * @param y the y-component
          * @param z the z-component
          */
-        Immutable(int x, int y, int z) {
+        Immutable(double x, double y, double z) {
             this.x = x;
             this.y = y;
             this.z = z;
         }
 
         @Override
-        public int x() {
+        public double x() {
             return x;
         }
 
         @Override
-        public int y() {
+        public double y() {
             return y;
         }
 
         @Override
-        public int z() {
+        public double z() {
             return z;
         }
 
         @Override
-        public @NotNull Vec3I immutable() {
+        public @NotNull Vec3D immutable() {
             return this;
         }
 
         @Override
-        public @NotNull Vec3I immutableView() {
+        public @NotNull Vec3D immutableView() {
             return this;
         }
 
-
         @Override
-        protected @NotNull Vec3I op(int x, int y, int z) {
-            return VecCache.cached(x, y, z);
+        protected @NotNull Vec3D op(double x, double y, double z) {
+            return new Immutable(x, y, z);
         }
     }
 
@@ -650,9 +599,9 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * The mutable vector type.
      */
     final class Mutable extends Base {
-        private int x;
-        private int y;
-        private int z;
+        private double x;
+        private double y;
+        private double z;
 
         /**
          * Constructs a new mutable vector.
@@ -661,39 +610,39 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
          * @param y the initial y-component
          * @param z the initial z-component
          */
-        Mutable(int x, int y, int z) {
+        Mutable(double x, double y, double z) {
             this.x = x;
             this.y = y;
             this.z = z;
         }
 
         @Override
-        public int x() {
+        public double x() {
             return x;
         }
 
         @Override
-        public int y() {
+        public double y() {
             return y;
         }
 
         @Override
-        public int z() {
+        public double z() {
             return z;
         }
 
         @Override
-        public @NotNull Vec3I immutable() {
-            return VecCache.cached(x, y, z);
+        public @NotNull Vec3D immutable() {
+            return new Immutable(x, y, z);
         }
 
         @Override
-        public @NotNull Vec3I immutableView() {
+        public @NotNull Vec3D immutableView() {
             return new View(this);
         }
 
         @Override
-        public @NotNull Vec3I set(int x, int y, int z) {
+        public @NotNull Vec3D set(double x, double y, double z) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -701,25 +650,25 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
         }
 
         @Override
-        public @NotNull Vec3I setX(int x) {
+        public @NotNull Vec3D setX(double x) {
             this.x = x;
             return this;
         }
 
         @Override
-        public @NotNull Vec3I setY(int y) {
+        public @NotNull Vec3D setY(double y) {
             this.y = y;
             return this;
         }
 
         @Override
-        public @NotNull Vec3I setZ(int z) {
+        public @NotNull Vec3D setZ(double z) {
             this.z = z;
             return this;
         }
 
         @Override
-        protected @NotNull Vec3I op(int x, int y, int z) {
+        protected @NotNull Vec3D op(double x, double y, double z) {
             this.x = x;
             this.y = y;
             this.z = z;

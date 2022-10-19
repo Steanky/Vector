@@ -5,11 +5,16 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Internal class for caching vectors. Not part of the public API.
  */
-class Vec3ICache {
+class VecCache {
     /**
-     * The common {@link ThreadLocal} instance used for thread-local mutable vectors.
+     * The common {@link ThreadLocal} instance used for thread-local mutable integer vectors.
      */
-    static final ThreadLocal<Vec3I> THREAD_LOCAL = ThreadLocal.withInitial(() -> Vec3I.mutable(0, 0, 0));
+    static final ThreadLocal<Vec3I> THREAD_LOCAL_3I = ThreadLocal.withInitial(() -> new Vec3I.Mutable(0, 0, 0));
+
+    /**
+     * The common {@link ThreadLocal} instance used for thread-local mutable double vectors.
+     */
+    static final ThreadLocal<Vec3D> THREAD_LOCAL_3D = ThreadLocal.withInitial(() -> new Vec3D.Mutable(0, 0, 0));
 
     //8x8x8 cube of vectors centered at the origin
     private static final Vec3I[] CACHE = new Vec3I[512];
