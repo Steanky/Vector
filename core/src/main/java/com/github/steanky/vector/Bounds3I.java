@@ -216,30 +216,94 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      */
     @NotNull Bounds3I expandDirectional(int x, int y, int z);
 
+    /**
+     * Convenience override for {@link Bounds3I#expandDirectional(int, int, int)}.
+     *
+     * @param amount the expansion vector
+     * @return a new bounds if this bounds is immutable, otherwise this bounds
+     */
     default @NotNull Bounds3I expandDirectional(@NotNull Vec3I amount) {
         return expandDirectional(amount.x(), amount.y(), amount.z());
     }
 
+    /**
+     * Shrinks this bounding box in a specific direction. If this operation would cause any lengths to become negative,
+     * an exception will be thrown.
+     *
+     * @param x the x shrink coordinate
+     * @param y the y shrink coordinate
+     * @param z the z shrink coordinate
+     * @return a new bounds if this bounds is immutable, otherwise this bounds
+     * @throws IllegalArgumentException if this shrink would cause any of the bounding box lengths to go below 0
+     */
     @NotNull Bounds3I shrinkDirectional(int x, int y, int z);
 
+    /**
+     * Convenience override for {@link Bounds3I#shrinkDirectional(int, int, int)}.
+     *
+     * @param amount the shrink vector
+     * @return a new bounds if this bounds is immutable, otherwise this bounds
+     */
     default @NotNull Bounds3I shrinkDirectional(@NotNull Vec3I amount) {
         return shrinkDirectional(amount.x(), amount.y(), amount.z());
     }
 
+    /**
+     * Tests if this bounding box overlaps another. More formally, tests if the set of all vectors enumerated by
+     * {@link Bounds3I#forEach(Vec3IConsumer)} has at least one element in common with the equivalent set from the other
+     * bounds.
+     *
+     * @param other the other bounds to test for overlap with
+     * @return true if there is an overlap, false otherwise
+     */
     boolean overlaps(@NotNull Bounds3I other);
 
+    /**
+     * Tests if this bounding box contains the given vector.
+     *
+     * @param x the x-coordinate
+     * @param y the y-coordinate
+     * @param z the z-coordinate
+     * @return true if this bounds contains the vector, false otherwise
+     */
     boolean contains(int x, int y, int z);
 
+    /**
+     * Convenience override for {@link Bounds3I#contains(int, int, int)}.
+     *
+     * @param vector the vector
+     * @return true if this bounds contains the vector, false otherwise
+     */
     default boolean contains(@NotNull Vec3I vector) {
         return contains(vector.x(), vector.y(), vector.z());
     }
 
+    /**
+     * Enumerates every position encompassed by the bounds.
+     *
+     * @param consumer the {@link Vec3IConsumer} that accepts each vector
+     */
     void forEach(@NotNull Vec3IConsumer consumer);
 
+    /**
+     * Enumerates every position encompassed by the bounds, until the given {@link Vec3IPredicate} returns true.
+     *
+     * @param predicate the predicate that accepts each vector and controls termination
+     */
     void forEachUntil(@NotNull Vec3IPredicate predicate);
 
+    /**
+     * Creates a new mutable copy of this bounds.
+     *
+     * @return a new mutable copy of this bounds
+     */
     @NotNull Bounds3I mutableCopy();
 
+    /**
+     * If this bounds is mutable, returns it. Otherwise, creates a mutable copy and returns it.
+     *
+     * @return this bounds if already mutable; otherwise a mutable copy
+     */
     default @NotNull Bounds3I ensureMutable() {
         if (this instanceof Mutable) {
             return this;
@@ -248,90 +312,192 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         return mutableCopy();
     }
 
+    /**
+     * Creates an immutable copy of this bounds if it is mutable, otherwise, returns this bounds.
+     *
+     * @return an immutable bounds
+     */
     @NotNull Bounds3I immutable();
 
+    /**
+     * Creates a read-through immutable bounds. The returned bounds cannot be modified, but changes to the underlying
+     * bounds, if mutable, will be visible. If this bounds is already immutable, this bounds is returned.
+     *
+     * @return an immutable view bounds
+     */
     @NotNull Bounds3I immutableView();
 
+    /**
+     * Override of {@link Bounds3I#enclosingImmutable(Bounds3I...)} to avoid an array allocation.
+     * @param bounds the first and only bounds
+     * @return the smallest possible bounds that encloses the given child bounds
+     */
     static @NotNull Bounds3I enclosingImmutable(@NotNull Bounds3I bounds) {
         return bounds.immutable();
     }
 
+    /**
+     * Override of {@link Bounds3I#enclosingImmutable(Bounds3I...)} to avoid an array allocation
+     *
+     * @param first the first bounds
+     * @param second the second bounds
+     * @return the smallest possible bounds that encloses the given child bounds
+     */
     static @NotNull Bounds3I enclosingImmutable(@NotNull Bounds3I first, @NotNull Bounds3I second) {
         return Base.enclosingFromPair(false, first, second);
     }
 
+    /**
+     * Calculates the smallest possible bounds that encloses each of given child bounds. Produces an immutable bounds.
+     *
+     * @param bounds the child bounds array
+     * @return the smallest possible bounds that encloses the given child bounds
+     */
     static @NotNull Bounds3I enclosingImmutable(@NotNull Bounds3I @NotNull ... bounds) {
         return Base.enclosingFromArray(false, bounds);
     }
 
+    /**
+     * Override of {@link Bounds3I#enclosingMutable(Bounds3I...)} to avoid an array allocation.
+     *
+     * @param bounds the first and only bounds
+     * @return the smallest possible bounds that encloses the given child bounds
+     */
     static @NotNull Bounds3I enclosingMutable(@NotNull Bounds3I bounds) {
         return bounds.mutableCopy();
     }
 
+    /**
+     * Override of {@link Bounds3I#enclosingMutable(Bounds3I...)} to avoid an array allocation
+     *
+     * @param first the first bounds
+     * @param second the second bounds
+     * @return the smallest possible bounds that encloses the given child bounds
+     */
     static @NotNull Bounds3I enclosingMutable(@NotNull Bounds3I first, @NotNull Bounds3I second) {
         return Base.enclosingFromPair(true, first, second);
     }
 
+    /**
+     * Calculates the smallest possible bounds that encloses each of given child bounds. Produces a mutable bounds.
+     *
+     * @param bounds the child bounds array
+     * @return the smallest possible bounds that encloses the given child bounds
+     */
     static @NotNull Bounds3I enclosingMutable(@NotNull Bounds3I @NotNull ... bounds) {
         return Base.enclosingFromArray(true, bounds);
     }
 
+    /**
+     * Creates a new, immutable bounds from the provided origin and length vectors. None of the lengths may be negative.
+     *
+     * @param x the x-coordinate of the origin
+     * @param y the y-coordinate of the origin
+     * @param z the z-coordinate of the origin
+     * @param lX the x-length
+     * @param lY the y-length
+     * @param lZ the z-length
+     * @return a new immutable bounds
+     * @throws IllegalArgumentException if any of the lengths are negative
+     */
     static @NotNull Bounds3I immutable(int x, int y, int z, int lX, int lY, int lZ) {
         Base.validateLengths(lX, lY, lZ);
         return new Immutable(x, y, z, lX, lY, lZ);
     }
 
+    /**
+     * Convenience override for {@link Bounds3I#immutable(int, int, int, int, int, int)}.
+     *
+     * @param origin the origin vector
+     * @param lengths the lengths vector
+     * @return a new immutable bounds
+     */
     static @NotNull Bounds3I immutable(@NotNull Vec3I origin, @NotNull Vec3I lengths) {
-        int lX = lengths.x();
-        int lY = lengths.y();
-        int lZ = lengths.z();
-
-        Base.validateLengths(lX, lY, lZ);
-        return new Immutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
+        return immutable(origin.x(), origin.y(), origin.z(), lengths.x(), lengths.y(), lengths.z());
     }
 
+    /**
+     * Convenience override for {@link Bounds3I#immutable(int, int, int, int, int, int)}.
+     *
+     * @param origin the origin vector
+     * @param lX the x-length
+     * @param lY the y-length
+     * @param lZ the z-length
+     * @return a new immutable bounds
+     */
     static @NotNull Bounds3I immutable(@NotNull Vec3I origin, int lX, int lY, int lZ) {
-        Base.validateLengths(lX, lY, lZ);
-        return new Immutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
+        return immutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
     }
 
+    /**
+     * Convenience override for {@link Bounds3I#immutable(int, int, int, int, int, int)}.
+     * @param x the x-coordinate of the origin
+     * @param y the y-coordinate of the origin
+     * @param z the z-coordinate of the origin
+     * @param lengths the lengths vector
+     * @return a new immutable bounds
+     */
     static @NotNull Bounds3I immutable(int x, int y, int z, @NotNull Vec3I lengths) {
-        int lX = lengths.x();
-        int lY = lengths.y();
-        int lZ = lengths.z();
-
-        Base.validateLengths(lX, lY, lZ);
-        return new Immutable(x, y, z, lX, lY, lZ);
+        return immutable(x, y, z, lengths.x(), lengths.y(), lengths.z());
     }
 
+    /**
+     * Creates a new, mutable bounds from the provided origin and length vectors. None of the lengths may be negative.
+     *
+     * @param x the x-coordinate of the origin
+     * @param y the y-coordinate of the origin
+     * @param z the z-coordinate of the origin
+     * @param lX the x-length
+     * @param lY the y-length
+     * @param lZ the z-length
+     * @return a new mutable bounds
+     * @throws IllegalArgumentException if any of the lengths are negative
+     */
     static @NotNull Bounds3I mutable(int x, int y, int z, int lX, int lY, int lZ) {
         Base.validateLengths(lX, lY, lZ);
         return new Mutable(x, y, z, lX, lY, lZ);
     }
 
+    /**
+     * Convenience override for {@link Bounds3I#mutable(int, int, int, int, int, int)}.
+     *
+     * @param origin the origin vector
+     * @param lengths the lengths vector
+     * @return a new mutable bounds
+     */
     static @NotNull Bounds3I mutable(@NotNull Vec3I origin, @NotNull Vec3I lengths) {
-        int lX = lengths.x();
-        int lY = lengths.y();
-        int lZ = lengths.z();
-
-        Base.validateLengths(lX, lY, lZ);
-        return new Mutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
+        return mutable(origin.x(), origin.y(), origin.z(), lengths.x(), lengths.y(), lengths.z());
     }
 
+    /**
+     * Convenience override for {@link Bounds3I#mutable(int, int, int, int, int, int)}.
+     *
+     * @param origin the origin vector
+     * @param lX the x-length
+     * @param lY the y-length
+     * @param lZ the z-length
+     * @return a new mutable bounds
+     */
     static @NotNull Bounds3I mutable(@NotNull Vec3I origin, int lX, int lY, int lZ) {
-        Base.validateLengths(lX, lY, lZ);
-        return new Mutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
+        return mutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
     }
 
+    /**
+     * Convenience override for {@link Bounds3I#mutable(int, int, int, int, int, int)}.
+     *
+     * @param x the x-coordinate of the origin
+     * @param y the y-coordinate of the origin
+     * @param z the z-coordinate of the origin
+     * @param lengths the lengths vector
+     * @return a new mutable bounds
+     */
     static @NotNull Bounds3I mutable(int x, int y, int z, @NotNull Vec3I lengths) {
-        int lX = lengths.x();
-        int lY = lengths.y();
-        int lZ = lengths.z();
-
-        Base.validateLengths(lX, lY, lZ);
-        return new Mutable(x, y, z, lX, lY, lZ);
+        return mutable(x, y, z, lengths.x(), lengths.y(), lengths.z());
     }
 
+    /**
+     * Base class of bounds implementations.
+     */
     abstract sealed class Base implements Bounds3I permits Mutable, Immutable, View {
         private static final int HASH_PRIME = 31;
 
@@ -367,6 +533,15 @@ public sealed interface Bounds3I permits Bounds3I.Base {
             if (x < 0 || y < 0 || z < 0) {
                 throw new IllegalArgumentException("Negative lengths are not allowed");
             }
+        }
+
+        private static int validateLength(int a, int b) {
+            int sum = a + b;
+            if (sum < 0) {
+                throw new IllegalArgumentException("Negative lengths are not allowed");
+            }
+
+            return sum;
         }
 
         private static Bounds3I enclosingFromPair(boolean mutable, Bounds3I first, Bounds3I second) {
@@ -440,8 +615,11 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         @Override
         public @NotNull Bounds3I expand(int amount) {
             int doubleAmount = amount * 2;
-            return op(originX() - amount, originY() - amount, originZ() - amount, Math.max(lengthX() +
-                    doubleAmount, 0), Math.max(lengthY() + doubleAmount, 0), Math.max(lengthZ() + doubleAmount, 0));
+
+            int lX = validateLength(lengthX(), doubleAmount);
+            int lY = validateLength(lengthY(), doubleAmount);
+            int lZ = validateLength(lengthZ(), doubleAmount);
+            return op(originX() - amount, originY() - amount, originZ() - amount, lX, lY, lZ);
         }
 
         private @NotNull Bounds3I expandOrShrink(int x, int y, int z, boolean expand) {
@@ -504,9 +682,12 @@ public sealed interface Bounds3I permits Bounds3I.Base {
                 }
             }
 
-            return op(originX() + originOffsetX, originY() + originOffsetY, originZ() + originOffsetZ,
-                    Math.max(lengthX() + lengthOffsetX, 0), Math.max(lengthY() + lengthOffsetY, 0), Math.max(lengthZ() +
-                            lengthOffsetZ, 0));
+            int lX = validateLength(lengthX(), lengthOffsetX);
+            int lY = validateLength(lengthY(), lengthOffsetY);
+            int lZ = validateLength(lengthZ(), lengthOffsetZ);
+
+            return op(originX() + originOffsetX, originY() + originOffsetY, originZ() + originOffsetZ, lX,
+                    lY, lZ);
         }
 
         @Override
@@ -594,6 +775,9 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         protected abstract @NotNull Bounds3I op(int oX, int oY, int oZ, int lX, int lY, int lZ);
     }
 
+    /**
+     * The mutable bounds implementation.
+     */
     final class Mutable extends Base {
         private int oX;
         private int oY;
@@ -696,6 +880,9 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
     }
 
+    /**
+     * The immutable bounds implementation.
+     */
     final class Immutable extends Base {
         private final int oX;
         private final int oY;
@@ -771,6 +958,9 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
     }
 
+    /**
+     * The read-through bounds implementation.
+     */
     final class View extends Base {
         private final Mutable mutable;
 
