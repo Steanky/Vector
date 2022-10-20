@@ -46,17 +46,16 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
      * <p>
      * Negative widths are not allowed and will result in an {@link IllegalArgumentException}.
      *
-     * @param x the x-origin
-     * @param y the y-origin
-     * @param z the z-origin
-     * @param width the x-width
-     * @param height the y-width
-     * @param depth the z-width
+     * @param x               the x-origin
+     * @param y               the y-origin
+     * @param z               the z-origin
+     * @param width           the x-width
+     * @param height          the y-width
+     * @param depth           the z-width
      * @param initialCapacity the initial capacity of the underlying map
-     * @param loadFactor the load factor of the underlying map
+     * @param loadFactor      the load factor of the underlying map
      */
-    public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth, int initialCapacity,
-            float loadFactor) {
+    public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth, int initialCapacity, float loadFactor) {
         this.underlyingMap = new Long2ObjectOpenHashMap<>(initialCapacity, loadFactor);
         if (width <= 0 || height <= 0 || depth <= 0) {
             throw new IllegalArgumentException("Side lengths cannot be negative or 0");
@@ -75,8 +74,8 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
         int bitDepth = bitSize(depthBit);
 
         if ((bitWidth + bitHeight + bitDepth) > Long.SIZE) {
-            throw new IllegalArgumentException("Cannot create a BasicVec3I2ObjectMap with more than 2^64 possible " +
-                    "values");
+            throw new IllegalArgumentException(
+                    "Cannot create a BasicVec3I2ObjectMap with more than 2^64 possible " + "values");
         }
 
         this.maskX = (widthBit << 1) - 1;
@@ -91,12 +90,12 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
      * Convenience overload that uses the default initial size {@link Hash#DEFAULT_INITIAL_SIZE} and default load factor
      * {@link Hash#DEFAULT_LOAD_FACTOR} for the internal {@link Long2ObjectOpenHashMap}.
      *
-     * @param x the x-origin
-     * @param y the y-origin
-     * @param z the z-origin
-     * @param width the x-width
+     * @param x      the x-origin
+     * @param y      the y-origin
+     * @param z      the z-origin
+     * @param width  the x-width
      * @param height the y-width
-     * @param depth the z-width
+     * @param depth  the z-width
      */
     public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth) {
         this(x, y, z, width, height, depth, Hash.DEFAULT_INITIAL_SIZE, Hash.DEFAULT_LOAD_FACTOR);
@@ -106,12 +105,12 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
      * Convenience overload that uses the default load factor {@link Hash#DEFAULT_LOAD_FACTOR} for the internal
      * {@link Long2ObjectOpenHashMap}.
      *
-     * @param x the x-origin
-     * @param y the y-origin
-     * @param z the z-origin
-     * @param width the x-width
-     * @param height the y-width
-     * @param depth the z-width
+     * @param x               the x-origin
+     * @param y               the y-origin
+     * @param z               the z-origin
+     * @param width           the x-width
+     * @param height          the y-width
+     * @param depth           the z-width
      * @param initialCapacity the initial capacity of the underlying map
      */
     public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth, int initialCapacity) {
@@ -122,12 +121,12 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
      * Convenience overload that uses the default initial size {@link Hash#DEFAULT_INITIAL_SIZE} for the internal
      * {@link Long2ObjectOpenHashMap}.
      *
-     * @param x the x-origin
-     * @param y the y-origin
-     * @param z the z-origin
-     * @param width the x-width
-     * @param height the y-width
-     * @param depth the z-width
+     * @param x          the x-origin
+     * @param y          the y-origin
+     * @param z          the z-origin
+     * @param width      the x-width
+     * @param height     the y-width
+     * @param depth      the z-width
      * @param loadFactor the load factor of the underlying map
      */
     public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth, float loadFactor) {
@@ -139,8 +138,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     }
 
     private long pack(long x, long y, int z) {
-        return (((x - this.x) & maskX) << (bitHeight + bitDepth)) |
-                (((y - this.y) & maskY) << bitDepth) |
+        return (((x - this.x) & maskX) << (bitHeight + bitDepth)) | (((y - this.y) & maskY) << bitDepth) |
                 ((z - this.z) & maskZ);
     }
 
@@ -215,8 +213,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
         if (map instanceof HashVec3I2ObjectMap<?> other) {
             //we can do a more efficient put by directly accessing the underlying map
             underlyingMap.putAll((Map<? extends Long, ? extends T>) other.underlyingMap);
-        }
-        else {
+        } else {
             //don't put one-by-one, this could result in lots of table resizing for large maps
             Map.Entry[] entries = map.entrySet().toArray(Entry[]::new);
             for (int i = 0; i < entries.length; i++) {
@@ -261,16 +258,6 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     }
 
     @Override
-    public void clear() {
-        underlyingMap.clear();
-    }
-
-    @Override
-    public @NotNull Collection<T> values() {
-        return underlyingMap.values();
-    }
-
-    @Override
     public int size() {
         return underlyingMap.size();
     }
@@ -278,6 +265,16 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     @Override
     public boolean containsValue(Object value) {
         return underlyingMap.containsValue(value);
+    }
+
+    @Override
+    public void clear() {
+        underlyingMap.clear();
+    }
+
+    @Override
+    public @NotNull Collection<T> values() {
+        return underlyingMap.values();
     }
 
     @Override
@@ -327,6 +324,11 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
             }
 
             @Override
+            public int size() {
+                return underlyingMap.size();
+            }
+
+            @Override
             public boolean remove(Object o) {
                 if (!(o instanceof Entry<?, ?> entry)) {
                     return false;
@@ -337,18 +339,13 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
                     return false;
                 }
 
-                return entrySet.remove(new AbstractLong2ObjectMap.BasicEntry<>(pack(vec.x(), vec.y(), vec.z()),
-                        entry.getValue()));
+                return entrySet.remove(
+                        new AbstractLong2ObjectMap.BasicEntry<>(pack(vec.x(), vec.y(), vec.z()), entry.getValue()));
             }
 
             @Override
             public void clear() {
                 underlyingMap.clear();
-            }
-
-            @Override
-            public int size() {
-                return underlyingMap.size();
             }
         };
     }

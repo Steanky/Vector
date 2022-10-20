@@ -1,4 +1,4 @@
-rootProject.name = "template"
+rootProject.name = "vector"
 
 val localSettings = file("local.settings.gradle.kts")
 if (localSettings.exists()) {

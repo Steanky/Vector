@@ -19,19 +19,60 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
     Vec3D ORIGIN = Vec3D.immutable(0, 0, 0);
 
     /**
+     * Returns the shared thread local mutable vector for use by the calling thread. Note that there is only one
+     * instance created per thread, and so the value of the vector when calling this method will be whatever it was last
+     * set to by the calling thread. If the calling thread has not obtained an instance previously, the vector will be
+     * set to the origin (0, 0, 0).
+     *
+     * @return the shared thread local mutable vector
+     */
+    static @NotNull Vec3D threadLocal() {
+        return VecCache.THREAD_LOCAL_3D.get();
+    }
+
+    /**
+     * Creates a new mutable vector.
+     *
+     * @param x the initial x-component
+     * @param y the initial y-component
+     * @param z the initial z-component
+     *
+     * @return a new mutable vector
+     */
+    static @NotNull Vec3D mutable(double x, double y, double z) {
+        return new Mutable(x, y, z);
+    }
+
+    /**
+     * Obtains an immutable vector for the provided coordinates.
+     *
+     * @param x the x-component
+     * @param y the y-component
+     * @param z the z-component
+     *
+     * @return an immutable vector
+     */
+    static @NotNull Vec3D immutable(double x, double y, double z) {
+        return new Immutable(x, y, z);
+    }
+
+    /**
      * The x-component of this vector.
+     *
      * @return the x-component of this vector
      */
     double x();
 
     /**
      * The y-component of this vector.
+     *
      * @return the y-component of this vector
      */
     double y();
 
     /**
      * The z-component of this vector.
+     *
      * @return the z-component of this vector
      */
     double z();
@@ -42,6 +83,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @param x the x-component to add
      * @param y the y-component to add
      * @param z the z-component to add
+     *
      * @return the sum of this vector and the provided coordinates
      */
     @NotNull Vec3D add(double x, double y, double z);
@@ -50,6 +92,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Adds a vector to this one.
      *
      * @param other the vector to add
+     *
      * @return the sum of this vector and another
      */
     default @NotNull Vec3D add(@NotNull Vec3D other) {
@@ -60,6 +103,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Adds the same value to each of this vector's components.
      *
      * @param c the value to add
+     *
      * @return a vector made from adding the given value to each component of this vector
      */
     default @NotNull Vec3D add(double c) {
@@ -72,6 +116,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @param x the x-component to subtract
      * @param y the y-component to subtract
      * @param z the z-component to subtract
+     *
      * @return the difference of this vector and another
      */
     @NotNull Vec3D sub(double x, double y, double z);
@@ -80,6 +125,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Subtracts another vector from this one.
      *
      * @param other the vector to subtract from this one
+     *
      * @return the difference between this vector and another
      */
     default @NotNull Vec3D sub(@NotNull Vec3D other) {
@@ -90,6 +136,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Subtracts the same value from each of this vector's components.
      *
      * @param c the value to subtract
+     *
      * @return a vector made from subtracting the given value from each component of this vector
      */
     default @NotNull Vec3D sub(double c) {
@@ -103,6 +150,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @param x the x-component to multiply by
      * @param y the y-component to multiply by
      * @param z the z-component to multiply by
+     *
      * @return the product of this vector and another
      */
     @NotNull Vec3D mul(double x, double y, double z);
@@ -112,16 +160,18 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * equivalent component of the given vector.
      *
      * @param other the vector to multiply with this one
+     *
      * @return the product of this vector and another
      */
     default @NotNull Vec3D mul(@NotNull Vec3D other) {
-        return mul(other.x(), other.y(),other.z());
+        return mul(other.x(), other.y(), other.z());
     }
 
     /**
      * Multiplies this vector by a scalar.
      *
      * @param c the scalar to multiply by
+     *
      * @return the product of this vector and a scalar
      */
     default @NotNull Vec3D mul(double c) {
@@ -135,6 +185,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @param x the x-component to divide by
      * @param y the y-component to divide by
      * @param z the z-component to divide by
+     *
      * @return the quotient of this vector and another
      */
     @NotNull Vec3D div(double x, double y, double z);
@@ -144,17 +195,18 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * component of the given vector.
      *
      * @param other the vector to divide this one by
+     *
      * @return the quotient of this vector and another
      */
     default @NotNull Vec3D div(@NotNull Vec3D other) {
         return div(other.x(), other.y(), other.z());
     }
 
-
     /**
      * Divides this vector by a scalar.
      *
      * @param c the scalar to divide by
+     *
      * @return the quotient of this vector and the scalar
      */
     default @NotNull Vec3D div(double c) {
@@ -182,6 +234,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @param x the x-component of the other vector
      * @param y the y-component of the other vector
      * @param z the z-component of the other vector
+     *
      * @return the distance between this vector and the other
      */
     double distanceTo(double x, double y, double z);
@@ -190,6 +243,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Computes the distance between this vector and another.
      *
      * @param other the other vector
+     *
      * @return the distance between this vector and the other
      */
     default double distanceTo(@NotNull Vec3D other) {
@@ -202,6 +256,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @param x the x-component of the other vector
      * @param y the y-component of the other vector
      * @param z the z-component of the other vector
+     *
      * @return the squared distance between this vector and the other
      */
     double distanceSquaredTo(double x, double y, double z);
@@ -210,6 +265,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Computes the squared distance between this vector and another.
      *
      * @param other the other vector
+     *
      * @return the squared distance between this vector and the other
      */
     default double distanceSquaredTo(@NotNull Vec3D other) {
@@ -222,6 +278,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @param x the x-component
      * @param y the y-component
      * @param z the z-component
+     *
      * @return the dot product of this vector and another
      */
     double dot(double x, double y, double z);
@@ -230,6 +287,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Returns the dot product of this vector and another.
      *
      * @param other the other vector
+     *
      * @return the dot product of this vector and another
      */
     default double dot(@NotNull Vec3D other) {
@@ -242,6 +300,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @param x the x-component
      * @param y the y-component
      * @param z the z-component
+     *
      * @return the cross product of this vector and another
      */
     @NotNull Vec3D cross(double x, double y, double z);
@@ -250,6 +309,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Returns the cross product of this vector and another.
      *
      * @param other the other vector
+     *
      * @return the cross product of this vector and another
      */
     default @NotNull Vec3D cross(@NotNull Vec3D other) {
@@ -298,6 +358,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @param x the new x-coordinate
      * @param y the new y-coordinate
      * @param z the new z-coordinate
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3D set(double x, double y, double z) {
@@ -308,6 +369,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Sets the value of this vector.
      *
      * @param other the vector whose components will be used to set this vector's
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3D set(@NotNull Vec3D other) {
@@ -318,6 +380,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Sets the x-coordinate of this vector.
      *
      * @param x the new x-coordinate
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3D setX(double x) {
@@ -328,6 +391,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Sets the y-coordinate of this vector.
      *
      * @param y the new y-coordinate
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3D setY(double y) {
@@ -338,46 +402,11 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * Sets the z-coordinate of this vector.
      *
      * @param z the new z-coordinate
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3D setZ(double z) {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the shared thread local mutable vector for use by the calling thread. Note that there is only one
-     * instance created per thread, and so the value of the vector when calling this method will be whatever it was last
-     * set to by the calling thread. If the calling thread has not obtained an instance previously, the vector will be
-     * set to the origin (0, 0, 0).
-     *
-     * @return the shared thread local mutable vector
-     */
-    static @NotNull Vec3D threadLocal() {
-        return VecCache.THREAD_LOCAL_3D.get();
-    }
-
-    /**
-     * Creates a new mutable vector.
-     *
-     * @param x the initial x-component
-     * @param y the initial y-component
-     * @param z the initial z-component
-     * @return a new mutable vector
-     */
-    static @NotNull Vec3D mutable(double x, double y, double z) {
-        return new Mutable(x, y, z);
-    }
-
-    /**
-     * Obtains an immutable vector for the provided coordinates.
-     *
-     * @param x the x-component
-     * @param y the y-component
-     * @param z the z-component
-     * @return an immutable vector
-     */
-    static @NotNull Vec3D immutable(double x, double y, double z) {
-        return new Immutable(x, y, z);
     }
 
     /**
@@ -497,6 +526,7 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
          * @param x the x-coordinate
          * @param y the y-coordinate
          * @param z the z-coordinate
+         *
          * @return this vector if mutable, or a new immutable vector
          */
         protected abstract @NotNull Vec3D op(double x, double y, double z);

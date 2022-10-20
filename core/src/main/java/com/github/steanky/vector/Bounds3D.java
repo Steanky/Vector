@@ -5,28 +5,30 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A three-dimensional bounding box with integer components. Supports immutable and mutable variants.
  */
+//there's no way to deduplicate much of this code without hurting performance significantly; e.g. by using Number for
+//utility methods
 @SuppressWarnings("DuplicatedCode")
-public sealed interface Bounds3I permits Bounds3I.Base {
+public sealed interface Bounds3D permits Bounds3D.Base {
     /**
-     * Override of {@link Bounds3I#enclosingImmutable(Bounds3I...)} to avoid an array allocation.
+     * Override of {@link Bounds3D#enclosingImmutable(Bounds3D...)} to avoid an array allocation.
      *
      * @param bounds the first and only bounds
      *
      * @return the smallest possible bounds that encloses the given child bounds
      */
-    static @NotNull Bounds3I enclosingImmutable(@NotNull Bounds3I bounds) {
+    static @NotNull Bounds3D enclosingImmutable(@NotNull Bounds3D bounds) {
         return bounds.immutable();
     }
 
     /**
-     * Override of {@link Bounds3I#enclosingImmutable(Bounds3I...)} to avoid an array allocation
+     * Override of {@link Bounds3D#enclosingImmutable(Bounds3D...)} to avoid an array allocation
      *
      * @param first  the first bounds
      * @param second the second bounds
      *
      * @return the smallest possible bounds that encloses the given child bounds
      */
-    static @NotNull Bounds3I enclosingImmutable(@NotNull Bounds3I first, @NotNull Bounds3I second) {
+    static @NotNull Bounds3D enclosingImmutable(@NotNull Bounds3D first, @NotNull Bounds3D second) {
         return Base.enclosingFromPair(false, first, second);
     }
 
@@ -37,30 +39,30 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return the smallest possible bounds that encloses the given child bounds
      */
-    static @NotNull Bounds3I enclosingImmutable(@NotNull Bounds3I @NotNull ... bounds) {
+    static @NotNull Bounds3D enclosingImmutable(@NotNull Bounds3D @NotNull ... bounds) {
         return Base.enclosingFromArray(false, bounds);
     }
 
     /**
-     * Override of {@link Bounds3I#enclosingMutable(Bounds3I...)} to avoid an array allocation.
+     * Override of {@link Bounds3D#enclosingMutable(Bounds3D...)} to avoid an array allocation.
      *
      * @param bounds the first and only bounds
      *
      * @return the smallest possible bounds that encloses the given child bounds
      */
-    static @NotNull Bounds3I enclosingMutable(@NotNull Bounds3I bounds) {
+    static @NotNull Bounds3D enclosingMutable(@NotNull Bounds3D bounds) {
         return bounds.mutableCopy();
     }
 
     /**
-     * Override of {@link Bounds3I#enclosingMutable(Bounds3I...)} to avoid an array allocation
+     * Override of {@link Bounds3D#enclosingMutable(Bounds3D...)} to avoid an array allocation
      *
      * @param first  the first bounds
      * @param second the second bounds
      *
      * @return the smallest possible bounds that encloses the given child bounds
      */
-    static @NotNull Bounds3I enclosingMutable(@NotNull Bounds3I first, @NotNull Bounds3I second) {
+    static @NotNull Bounds3D enclosingMutable(@NotNull Bounds3D first, @NotNull Bounds3D second) {
         return Base.enclosingFromPair(true, first, second);
     }
 
@@ -71,7 +73,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return the smallest possible bounds that encloses the given child bounds
      */
-    static @NotNull Bounds3I enclosingMutable(@NotNull Bounds3I @NotNull ... bounds) {
+    static @NotNull Bounds3D enclosingMutable(@NotNull Bounds3D @NotNull ... bounds) {
         return Base.enclosingFromArray(true, bounds);
     }
 
@@ -89,25 +91,25 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      * @return a new immutable bounds
      * @throws IllegalArgumentException if any of the lengths are negative
      */
-    static @NotNull Bounds3I immutable(int x, int y, int z, int lX, int lY, int lZ) {
+    static @NotNull Bounds3D immutable(double x, double y, double z, double lX, double lY, double lZ) {
         Base.validateLengths(lX, lY, lZ);
         return new Immutable(x, y, z, lX, lY, lZ);
     }
 
     /**
-     * Convenience override for {@link Bounds3I#immutable(int, int, int, int, int, int)}.
+     * Convenience override for {@link Bounds3D#immutable(double, double, double, double, double, double)}.
      *
      * @param origin  the origin vector
      * @param lengths the lengths vector
      *
      * @return a new immutable bounds
      */
-    static @NotNull Bounds3I immutable(@NotNull Vec3I origin, @NotNull Vec3I lengths) {
+    static @NotNull Bounds3D immutable(@NotNull Vec3D origin, @NotNull Vec3D lengths) {
         return immutable(origin.x(), origin.y(), origin.z(), lengths.x(), lengths.y(), lengths.z());
     }
 
     /**
-     * Convenience override for {@link Bounds3I#immutable(int, int, int, int, int, int)}.
+     * Convenience override for {@link Bounds3D#immutable(double, double, double, double, double, double)}.
      *
      * @param origin the origin vector
      * @param lX     the x-length
@@ -116,12 +118,12 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return a new immutable bounds
      */
-    static @NotNull Bounds3I immutable(@NotNull Vec3I origin, int lX, int lY, int lZ) {
+    static @NotNull Bounds3D immutable(@NotNull Vec3D origin, double lX, double lY, double lZ) {
         return immutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
     }
 
     /**
-     * Convenience override for {@link Bounds3I#immutable(int, int, int, int, int, int)}.
+     * Convenience override for {@link Bounds3D#immutable(double, double, double, double, double, double)}.
      *
      * @param x       the x-coordinate of the origin
      * @param y       the y-coordinate of the origin
@@ -130,7 +132,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return a new immutable bounds
      */
-    static @NotNull Bounds3I immutable(int x, int y, int z, @NotNull Vec3I lengths) {
+    static @NotNull Bounds3D immutable(double x, double y, double z, @NotNull Vec3D lengths) {
         return immutable(x, y, z, lengths.x(), lengths.y(), lengths.z());
     }
 
@@ -147,25 +149,25 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      * @return a new mutable bounds
      * @throws IllegalArgumentException if any of the lengths are negative
      */
-    static @NotNull Bounds3I mutable(int x, int y, int z, int lX, int lY, int lZ) {
+    static @NotNull Bounds3D mutable(double x, double y, double z, double lX, double lY, double lZ) {
         Base.validateLengths(lX, lY, lZ);
         return new Mutable(x, y, z, lX, lY, lZ);
     }
 
     /**
-     * Convenience override for {@link Bounds3I#mutable(int, int, int, int, int, int)}.
+     * Convenience override for {@link Bounds3D#mutable(double, double, double, double, double, double)}.
      *
      * @param origin  the origin vector
      * @param lengths the lengths vector
      *
      * @return a new mutable bounds
      */
-    static @NotNull Bounds3I mutable(@NotNull Vec3I origin, @NotNull Vec3I lengths) {
+    static @NotNull Bounds3D mutable(@NotNull Vec3D origin, @NotNull Vec3D lengths) {
         return mutable(origin.x(), origin.y(), origin.z(), lengths.x(), lengths.y(), lengths.z());
     }
 
     /**
-     * Convenience override for {@link Bounds3I#mutable(int, int, int, int, int, int)}.
+     * Convenience override for {@link Bounds3D#mutable(double, double, double, double, double, double)}.
      *
      * @param origin the origin vector
      * @param lX     the x-length
@@ -174,12 +176,12 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return a new mutable bounds
      */
-    static @NotNull Bounds3I mutable(@NotNull Vec3I origin, int lX, int lY, int lZ) {
+    static @NotNull Bounds3D mutable(@NotNull Vec3D origin, double lX, double lY, double lZ) {
         return mutable(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
     }
 
     /**
-     * Convenience override for {@link Bounds3I#mutable(int, int, int, int, int, int)}.
+     * Convenience override for {@link Bounds3D#mutable(double, double, double, double, double, double)}.
      *
      * @param x       the x-coordinate of the origin
      * @param y       the y-coordinate of the origin
@@ -188,7 +190,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return a new mutable bounds
      */
-    static @NotNull Bounds3I mutable(int x, int y, int z, @NotNull Vec3I lengths) {
+    static @NotNull Bounds3D mutable(double x, double y, double z, @NotNull Vec3D lengths) {
         return mutable(x, y, z, lengths.x(), lengths.y(), lengths.z());
     }
 
@@ -198,7 +200,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return the x-origin
      */
-    int originX();
+    double originX();
 
     /**
      * The origin y-component. This is the y-coordinate of the corner of the bounding box that is closest to
@@ -206,7 +208,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return the y-origin
      */
-    int originY();
+    double originY();
 
     /**
      * The origin z-component. This is the z-coordinate of the corner of the bounding box that is closest to
@@ -214,28 +216,28 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return the z-origin
      */
-    int originZ();
+    double originZ();
 
     /**
      * The x-length of the bounds. Will always be larger than or equal to 0.
      *
      * @return the x-length of this bounds
      */
-    int lengthX();
+    double lengthX();
 
     /**
      * The y-length of the bounds. Will always be larger than or equal to 0.
      *
      * @return the y-length of this bounds
      */
-    int lengthY();
+    double lengthY();
 
     /**
      * The z-length of the bounds. Will always be larger than or equal to 0.
      *
      * @return the z-length of this bounds
      */
-    int lengthZ();
+    double lengthZ();
 
     /**
      * The maximum x-component. This is the x-coordinate of the corner of the bounding box that is farthest from
@@ -243,7 +245,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return the x-max
      */
-    default int maxX() {
+    default double maxX() {
         return originX() + lengthX();
     }
 
@@ -253,7 +255,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return the y-max
      */
-    default int maxY() {
+    default double maxY() {
         return originY() + lengthY();
     }
 
@@ -263,7 +265,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return the z-max
      */
-    default int maxZ() {
+    default double maxZ() {
         return originZ() + lengthZ();
     }
 
@@ -272,7 +274,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return the product of the lengths of the bounds
      */
-    int volume();
+    double volume();
 
     /**
      * Changes the origin vector of the bounds.
@@ -283,16 +285,16 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      */
-    @NotNull Bounds3I setOrigin(int x, int y, int z);
+    @NotNull Bounds3D setOrigin(double x, double y, double z);
 
     /**
-     * Convenience override for {@link Bounds3I#setOrigin(int, int, int)}.
+     * Convenience override for {@link Bounds3D#setOrigin(double, double, double)}.
      *
      * @param vector the origin vector
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      */
-    default @NotNull Bounds3I setOrigin(@NotNull Vec3I vector) {
+    default @NotNull Bounds3D setOrigin(@NotNull Vec3D vector) {
         return setOrigin(vector.x(), vector.y(), vector.z());
     }
 
@@ -305,16 +307,17 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      */
-    @NotNull Bounds3I setLengths(int x, int y, int z);
+    @NotNull Bounds3D setLengths(double x, double y, double z);
 
     /**
-     * Convenience override for {@link Bounds3I#setLengths(int, int, int)}. Length components must be {@code >= 0}.
+     * Convenience override for {@link Bounds3D#setLengths(double, double, double)}. Length components must be
+     * {@code >= 0}.
      *
      * @param vector the lengths vector
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      */
-    default @NotNull Bounds3I setLengths(@NotNull Vec3I vector) {
+    default @NotNull Bounds3D setLengths(@NotNull Vec3D vector) {
         return setLengths(vector.x(), vector.y(), vector.z());
     }
 
@@ -331,24 +334,24 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      * @return this bounds, for chaining
      * @throws UnsupportedOperationException if this bounds is immutable
      */
-    default @NotNull Bounds3I set(int x, int y, int z, int lX, int lY, int lZ) {
+    default @NotNull Bounds3D set(double x, double y, double z, double lX, double lY, double lZ) {
         throw new UnsupportedOperationException();
     }
 
     /**
-     * Convenience override for {@link Bounds3I#set(int, int, int, int, int, int)}.
+     * Convenience override for {@link Bounds3D#set(double, double, double, double, double, double)}.
      *
      * @param origin  origin vector
      * @param lengths lengths vector
      *
      * @return this bounds, for chaining
      */
-    default @NotNull Bounds3I set(@NotNull Vec3I origin, @NotNull Vec3I lengths) {
+    default @NotNull Bounds3D set(@NotNull Vec3D origin, @NotNull Vec3D lengths) {
         return set(origin.x(), origin.y(), origin.z(), lengths.x(), lengths.y(), lengths.z());
     }
 
     /**
-     * Convenience override for {@link Bounds3I#set(int, int, int, int, int, int)}.
+     * Convenience override for {@link Bounds3D#set(double, double, double, double, double, double)}.
      *
      * @param origin origin vector
      * @param lX     length x
@@ -357,12 +360,12 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return this bounds, for chaining
      */
-    default @NotNull Bounds3I set(@NotNull Vec3I origin, int lX, int lY, int lZ) {
+    default @NotNull Bounds3D set(@NotNull Vec3D origin, double lX, double lY, double lZ) {
         return set(origin.x(), origin.y(), origin.z(), lX, lY, lZ);
     }
 
     /**
-     * Convenience override for {@link Bounds3I#set(int, int, int, int, int, int)}.
+     * Convenience override for {@link Bounds3D#set(double, double, double, double, double, double)}.
      *
      * @param x       origin x
      * @param y       origin y
@@ -371,7 +374,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return this bounds, for chaining
      */
-    default @NotNull Bounds3I set(int x, int y, int z, @NotNull Vec3I lengths) {
+    default @NotNull Bounds3D set(double x, double y, double z, @NotNull Vec3D lengths) {
         return set(x, y, z, lengths.x(), lengths.y(), lengths.z());
     }
 
@@ -384,16 +387,16 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      */
-    @NotNull Bounds3I shift(int x, int y, int z);
+    @NotNull Bounds3D shift(double x, double y, double z);
 
     /**
-     * Convenience override for {@link Bounds3I#shift(int, int, int)}.
+     * Convenience override for {@link Bounds3D#shift(double, double, double)}.
      *
      * @param amount the shift vector
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      */
-    default @NotNull Bounds3I shift(@NotNull Vec3I amount) {
+    default @NotNull Bounds3D shift(@NotNull Vec3D amount) {
         return shift(amount.x(), amount.y(), amount.z());
     }
 
@@ -406,7 +409,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      * @throws IllegalArgumentException if this expansion would cause any of the bounding box lengths to shrink below 0
      */
-    @NotNull Bounds3I expand(int amount);
+    @NotNull Bounds3D expand(double amount);
 
     /**
      * Expands this bounding box in a specific direction. For example, expanding by (0, -1, 0) will cause this bounding
@@ -418,16 +421,16 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      */
-    @NotNull Bounds3I expandDirectional(int x, int y, int z);
+    @NotNull Bounds3D expandDirectional(double x, double y, double z);
 
     /**
-     * Convenience override for {@link Bounds3I#expandDirectional(int, int, int)}.
+     * Convenience override for {@link Bounds3D#expandDirectional(double, double, double)}.
      *
      * @param amount the expansion vector
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      */
-    default @NotNull Bounds3I expandDirectional(@NotNull Vec3I amount) {
+    default @NotNull Bounds3D expandDirectional(@NotNull Vec3D amount) {
         return expandDirectional(amount.x(), amount.y(), amount.z());
     }
 
@@ -442,29 +445,27 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      * @throws IllegalArgumentException if this shrink would cause any of the bounding box lengths to go below 0
      */
-    @NotNull Bounds3I shrinkDirectional(int x, int y, int z);
+    @NotNull Bounds3D shrinkDirectional(double x, double y, double z);
 
     /**
-     * Convenience override for {@link Bounds3I#shrinkDirectional(int, int, int)}.
+     * Convenience override for {@link Bounds3D#shrinkDirectional(double, double, double)}.
      *
      * @param amount the shrink vector
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
      */
-    default @NotNull Bounds3I shrinkDirectional(@NotNull Vec3I amount) {
+    default @NotNull Bounds3D shrinkDirectional(@NotNull Vec3D amount) {
         return shrinkDirectional(amount.x(), amount.y(), amount.z());
     }
 
     /**
-     * Tests if this bounding box overlaps another. More formally, tests if the set of all vectors enumerated by
-     * {@link Bounds3I#forEach(Vec3IConsumer)} has at least one element in common with the equivalent set from the other
-     * bounds.
+     * Tests if this bounding box overlaps another.
      *
      * @param other the other bounds to test for overlap with
      *
      * @return true if there is an overlap, false otherwise
      */
-    boolean overlaps(@NotNull Bounds3I other);
+    boolean overlaps(@NotNull Bounds3D other);
 
     /**
      * Tests if this bounding box contains the given vector.
@@ -475,46 +476,32 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return true if this bounds contains the vector, false otherwise
      */
-    boolean contains(int x, int y, int z);
+    boolean contains(double x, double y, double z);
 
     /**
-     * Convenience override for {@link Bounds3I#contains(int, int, int)}.
+     * Convenience override for {@link Bounds3D#contains(double, double, double)}.
      *
      * @param vector the vector
      *
      * @return true if this bounds contains the vector, false otherwise
      */
-    default boolean contains(@NotNull Vec3I vector) {
+    default boolean contains(@NotNull Vec3D vector) {
         return contains(vector.x(), vector.y(), vector.z());
     }
-
-    /**
-     * Enumerates every position encompassed by the bounds.
-     *
-     * @param consumer the {@link Vec3IConsumer} that accepts each vector
-     */
-    void forEach(@NotNull Vec3IConsumer consumer);
-
-    /**
-     * Enumerates every position encompassed by the bounds, until the given {@link Vec3IPredicate} returns true.
-     *
-     * @param predicate the predicate that accepts each vector and controls termination
-     */
-    void forEachUntil(@NotNull Vec3IPredicate predicate);
 
     /**
      * Creates a new mutable copy of this bounds.
      *
      * @return a new mutable copy of this bounds
      */
-    @NotNull Bounds3I mutableCopy();
+    @NotNull Bounds3D mutableCopy();
 
     /**
      * If this bounds is mutable, returns it. Otherwise, creates a mutable copy and returns it.
      *
      * @return this bounds if already mutable; otherwise a mutable copy
      */
-    default @NotNull Bounds3I ensureMutable() {
+    default @NotNull Bounds3D ensureMutable() {
         if (this instanceof Mutable) {
             return this;
         }
@@ -527,7 +514,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return an immutable bounds
      */
-    @NotNull Bounds3I immutable();
+    @NotNull Bounds3D immutable();
 
     /**
      * Creates a read-through immutable bounds. The returned bounds cannot be modified, but changes to the underlying
@@ -535,22 +522,22 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      *
      * @return an immutable view bounds
      */
-    @NotNull Bounds3I immutableView();
+    @NotNull Bounds3D immutableView();
 
     /**
      * Base class of bounds implementations.
      */
-    abstract sealed class Base implements Bounds3I permits Mutable, Immutable, View {
+    abstract sealed class Base implements Bounds3D permits Mutable, Immutable, View {
         private static final int HASH_PRIME = 31;
 
-        private static void validateLengths(int x, int y, int z) {
+        private static void validateLengths(double x, double y, double z) {
             if (x < 0 || y < 0 || z < 0) {
                 throw new IllegalArgumentException("Negative lengths are not allowed");
             }
         }
 
-        private static int validateLength(int a, int b) {
-            int sum = a + b;
+        private static double validateLength(double a, double b) {
+            double sum = a + b;
             if (sum < 0) {
                 throw new IllegalArgumentException("Negative lengths are not allowed");
             }
@@ -558,39 +545,39 @@ public sealed interface Bounds3I permits Bounds3I.Base {
             return sum;
         }
 
-        private static Bounds3I enclosingFromPair(boolean mutable, Bounds3I first, Bounds3I second) {
-            int minX = Math.min(first.originX(), second.originX());
-            int minY = Math.min(first.originY(), second.originY());
-            int minZ = Math.min(first.originZ(), second.originZ());
+        private static Bounds3D enclosingFromPair(boolean mutable, Bounds3D first, Bounds3D second) {
+            double minX = Math.min(first.originX(), second.originX());
+            double minY = Math.min(first.originY(), second.originY());
+            double minZ = Math.min(first.originZ(), second.originZ());
 
-            int maxX = Math.max(first.maxX(), second.maxX());
-            int maxY = Math.max(first.maxY(), second.maxY());
-            int maxZ = Math.max(first.maxZ(), second.maxZ());
+            double maxX = Math.max(first.maxX(), second.maxX());
+            double maxY = Math.max(first.maxY(), second.maxY());
+            double maxZ = Math.max(first.maxZ(), second.maxZ());
 
             return mutable ? new Mutable(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ) :
                     new Immutable(minX, minY, minZ, maxX - minX, maxY - minY, maxZ - minZ);
         }
 
-        private static Bounds3I enclosingFromArray(boolean mutable, Bounds3I... bounds) {
+        private static Bounds3D enclosingFromArray(boolean mutable, Bounds3D... bounds) {
             if (bounds.length == 0) {
                 throw new IllegalArgumentException("Must provide at least one region");
             }
 
-            Bounds3I first = bounds[0];
+            Bounds3D first = bounds[0];
             if (bounds.length == 1) {
                 return mutable ? first.mutableCopy() : first.immutable();
             }
 
-            int minX = first.originX();
-            int minY = first.originY();
-            int minZ = first.originZ();
+            double minX = first.originX();
+            double minY = first.originY();
+            double minZ = first.originZ();
 
-            int maxX = first.maxX();
-            int maxY = first.maxY();
-            int maxZ = first.maxZ();
+            double maxX = first.maxX();
+            double maxY = first.maxY();
+            double maxZ = first.maxZ();
 
             for (int i = 1; i < bounds.length; i++) {
-                Bounds3I sample = bounds[i];
+                Bounds3D sample = bounds[i];
 
                 minX = Math.min(minX, sample.originX());
                 minY = Math.min(minY, sample.originY());
@@ -607,12 +594,12 @@ public sealed interface Bounds3I permits Bounds3I.Base {
 
         @Override
         public final int hashCode() {
-            int result = HASH_PRIME + originX();
-            result = HASH_PRIME * result + originY();
-            result = HASH_PRIME * result + originZ();
-            result = HASH_PRIME * result + lengthX();
-            result = HASH_PRIME * result + lengthY();
-            return HASH_PRIME * result + lengthZ();
+            int result = HASH_PRIME + Double.hashCode(originX());
+            result = HASH_PRIME * result + Double.hashCode(originY());
+            result = HASH_PRIME * result + Double.hashCode(originZ());
+            result = HASH_PRIME * result + Double.hashCode(lengthX());
+            result = HASH_PRIME * result + Double.hashCode(lengthY());
+            return HASH_PRIME * result + Double.hashCode(lengthZ());
         }
 
         @Override
@@ -625,7 +612,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
                 return true;
             }
 
-            if (obj instanceof Bounds3I other) {
+            if (obj instanceof Bounds3D other) {
                 return originX() == other.originX() && originY() == other.originY() && originZ() == other.originZ() &&
                         lengthX() == other.lengthX() && lengthY() == other.lengthY() && lengthZ() == other.lengthZ();
             }
@@ -634,55 +621,55 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
-        public int volume() {
+        public double volume() {
             return lengthX() * lengthY() * lengthZ();
         }
 
         @Override
-        public @NotNull Bounds3I setOrigin(int x, int y, int z) {
+        public @NotNull Bounds3D setOrigin(double x, double y, double z) {
             return originOp(x, y, z);
         }
 
         @Override
-        public @NotNull Bounds3I setLengths(int x, int y, int z) {
+        public @NotNull Bounds3D setLengths(double x, double y, double z) {
             validateLengths(x, y, z);
             return lengthOp(x, y, z);
         }
 
         @Override
-        public @NotNull Bounds3I shift(int x, int y, int z) {
+        public @NotNull Bounds3D shift(double x, double y, double z) {
             return originOp(originX() + x, originY() + y, originZ() + z);
         }
 
         @Override
-        public @NotNull Bounds3I expand(int amount) {
-            int doubleAmount = amount * 2;
+        public @NotNull Bounds3D expand(double amount) {
+            double doubleAmount = amount * 2;
 
-            int lX = validateLength(lengthX(), doubleAmount);
-            int lY = validateLength(lengthY(), doubleAmount);
-            int lZ = validateLength(lengthZ(), doubleAmount);
+            double lX = validateLength(lengthX(), doubleAmount);
+            double lY = validateLength(lengthY(), doubleAmount);
+            double lZ = validateLength(lengthZ(), doubleAmount);
             return op(originX() - amount, originY() - amount, originZ() - amount, lX, lY, lZ);
         }
 
         @Override
-        public @NotNull Bounds3I expandDirectional(int x, int y, int z) {
+        public @NotNull Bounds3D expandDirectional(double x, double y, double z) {
             return expandOrShrink(x, y, z, true);
         }
 
         @Override
-        public @NotNull Bounds3I shrinkDirectional(int x, int y, int z) {
+        public @NotNull Bounds3D shrinkDirectional(double x, double y, double z) {
             return expandOrShrink(x, y, z, false);
         }
 
         @Override
-        public boolean overlaps(@NotNull Bounds3I other) {
-            int nx1 = maxX();
-            int ny1 = maxY();
-            int nz1 = maxZ();
+        public boolean overlaps(@NotNull Bounds3D other) {
+            double nx1 = maxX();
+            double ny1 = maxY();
+            double nz1 = maxZ();
 
-            int nx2 = other.maxX();
-            int ny2 = other.maxY();
-            int nz2 = other.maxZ();
+            double nx2 = other.maxX();
+            double ny2 = other.maxY();
+            double nz2 = other.maxZ();
 
             return Math.min(originX(), nx1) < Math.max(other.originX(), nx2) &&
                     Math.max(originX(), nx1) > Math.min(other.originX(), nx2) &&
@@ -693,11 +680,11 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
-        public boolean contains(int x, int y, int z) {
+        public boolean contains(double x, double y, double z) {
             if (x >= originX() && y >= originY() && z >= originZ()) {
-                int nx = maxX();
-                int ny = maxY();
-                int nz = maxZ();
+                double nx = maxX();
+                double ny = maxY();
+                double nz = maxZ();
 
                 return x < nx && y < ny && z < nz;
             }
@@ -706,50 +693,18 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
-        public void forEach(@NotNull Vec3IConsumer consumer) {
-            int nx = maxX();
-            int ny = maxY();
-            int nz = maxZ();
-
-            for (int i = originX(); i < nx; i++) {
-                for (int j = originY(); j < ny; j++) {
-                    for (int k = originZ(); k < nz; k++) {
-                        consumer.accept(i, j, k);
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void forEachUntil(@NotNull Vec3IPredicate predicate) {
-            int nx = maxX();
-            int ny = maxY();
-            int nz = maxZ();
-
-            for (int i = originX(); i < nx; i++) {
-                for (int j = originY(); j < ny; j++) {
-                    for (int k = originZ(); k < nz; k++) {
-                        if (predicate.test(i, j, k)) {
-                            return;
-                        }
-                    }
-                }
-            }
-        }
-
-        @Override
-        public @NotNull Bounds3I mutableCopy() {
+        public @NotNull Bounds3D mutableCopy() {
             return new Mutable(originX(), originY(), originZ(), lengthX(), lengthY(), lengthZ());
         }
 
-        private @NotNull Bounds3I expandOrShrink(int x, int y, int z, boolean expand) {
-            int originOffsetX = 0;
-            int originOffsetY = 0;
-            int originOffsetZ = 0;
+        private @NotNull Bounds3D expandOrShrink(double x, double y, double z, boolean expand) {
+            double originOffsetX = 0;
+            double originOffsetY = 0;
+            double originOffsetZ = 0;
 
-            int lengthOffsetX = 0;
-            int lengthOffsetY = 0;
-            int lengthOffsetZ = 0;
+            double lengthOffsetX = 0;
+            double lengthOffsetY = 0;
+            double lengthOffsetZ = 0;
 
             if (x < 0) {
                 if (expand) {
@@ -793,9 +748,9 @@ public sealed interface Bounds3I permits Bounds3I.Base {
                 }
             }
 
-            int lX = validateLength(lengthX(), lengthOffsetX);
-            int lY = validateLength(lengthY(), lengthOffsetY);
-            int lZ = validateLength(lengthZ(), lengthOffsetZ);
+            double lX = validateLength(lengthX(), lengthOffsetX);
+            double lY = validateLength(lengthY(), lengthOffsetY);
+            double lZ = validateLength(lengthZ(), lengthOffsetZ);
 
             return op(originX() + originOffsetX, originY() + originOffsetY, originZ() + originOffsetZ, lX, lY, lZ);
         }
@@ -809,7 +764,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
          *
          * @return this bounds if mutable; otherwise a new bounds
          */
-        protected abstract @NotNull Bounds3I originOp(int x, int y, int z);
+        protected abstract @NotNull Bounds3D originOp(double x, double y, double z);
 
         /**
          * Sets the lengths to a new value, or creates a new bounds with the new length values.
@@ -820,7 +775,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
          *
          * @return this bounds if mutable; otherwise a new bounds
          */
-        protected abstract @NotNull Bounds3I lengthOp(int x, int y, int z);
+        protected abstract @NotNull Bounds3D lengthOp(double x, double y, double z);
 
         /**
          * Sets the origin and lengths to new values, or creates a new bounds with the new parameters.
@@ -834,22 +789,22 @@ public sealed interface Bounds3I permits Bounds3I.Base {
          *
          * @return this bounds if mutable; otherwise a new bounds
          */
-        protected abstract @NotNull Bounds3I op(int oX, int oY, int oZ, int lX, int lY, int lZ);
+        protected abstract @NotNull Bounds3D op(double oX, double oY, double oZ, double lX, double lY, double lZ);
     }
 
     /**
      * The mutable bounds implementation.
      */
     final class Mutable extends Base {
-        private int oX;
-        private int oY;
-        private int oZ;
+        private double oX;
+        private double oY;
+        private double oZ;
 
-        private int lX;
-        private int lY;
-        private int lZ;
+        private double lX;
+        private double lY;
+        private double lZ;
 
-        Mutable(int oX, int oY, int oZ, int lX, int lY, int lZ) {
+        Mutable(double oX, double oY, double oZ, double lX, double lY, double lZ) {
             this.oX = oX;
             this.oY = oY;
             this.oZ = oZ;
@@ -860,37 +815,37 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
-        public int originX() {
+        public double originX() {
             return oX;
         }
 
         @Override
-        public int originY() {
+        public double originY() {
             return oY;
         }
 
         @Override
-        public int originZ() {
+        public double originZ() {
             return oZ;
         }
 
         @Override
-        public int lengthX() {
+        public double lengthX() {
             return lX;
         }
 
         @Override
-        public int lengthY() {
+        public double lengthY() {
             return lY;
         }
 
         @Override
-        public int lengthZ() {
+        public double lengthZ() {
             return lZ;
         }
 
         @Override
-        public @NotNull Bounds3I set(int x, int y, int z, int lX, int lY, int lZ) {
+        public @NotNull Bounds3D set(double x, double y, double z, double lX, double lY, double lZ) {
             Base.validateLengths(lX, lY, lZ);
 
             this.oX = x;
@@ -904,17 +859,17 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
-        public @NotNull Bounds3I immutable() {
+        public @NotNull Bounds3D immutable() {
             return new Immutable(oX, oY, oZ, lX, lY, lZ);
         }
 
         @Override
-        public @NotNull Bounds3I immutableView() {
+        public @NotNull Bounds3D immutableView() {
             return new View(this);
         }
 
         @Override
-        protected @NotNull Bounds3I originOp(int x, int y, int z) {
+        protected @NotNull Bounds3D originOp(double x, double y, double z) {
             this.oX = x;
             this.oY = y;
             this.oZ = z;
@@ -922,7 +877,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
-        protected @NotNull Bounds3I lengthOp(int x, int y, int z) {
+        protected @NotNull Bounds3D lengthOp(double x, double y, double z) {
             this.lX = x;
             this.lY = y;
             this.lZ = z;
@@ -930,7 +885,7 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
-        protected @NotNull Bounds3I op(int oX, int oY, int oZ, int lX, int lY, int lZ) {
+        protected @NotNull Bounds3D op(double oX, double oY, double oZ, double lX, double lY, double lZ) {
             this.oX = oX;
             this.oY = oY;
             this.oZ = oZ;
@@ -946,15 +901,15 @@ public sealed interface Bounds3I permits Bounds3I.Base {
      * The immutable bounds implementation.
      */
     final class Immutable extends Base {
-        private final int oX;
-        private final int oY;
-        private final int oZ;
+        private final double oX;
+        private final double oY;
+        private final double oZ;
 
-        private final int lX;
-        private final int lY;
-        private final int lZ;
+        private final double lX;
+        private final double lY;
+        private final double lZ;
 
-        Immutable(int oX, int oY, int oZ, int lX, int lY, int lZ) {
+        Immutable(double oX, double oY, double oZ, double lX, double lY, double lZ) {
             this.oX = oX;
             this.oY = oY;
             this.oZ = oZ;
@@ -965,57 +920,57 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
-        public int originX() {
+        public double originX() {
             return oX;
         }
 
         @Override
-        public int originY() {
+        public double originY() {
             return oY;
         }
 
         @Override
-        public int originZ() {
+        public double originZ() {
             return oZ;
         }
 
         @Override
-        public int lengthX() {
+        public double lengthX() {
             return lX;
         }
 
         @Override
-        public int lengthY() {
+        public double lengthY() {
             return lY;
         }
 
         @Override
-        public int lengthZ() {
+        public double lengthZ() {
             return lZ;
         }
 
         @Override
-        public @NotNull Bounds3I immutable() {
+        public @NotNull Bounds3D immutable() {
             return this;
         }
 
         @Override
-        public @NotNull Bounds3I immutableView() {
+        public @NotNull Bounds3D immutableView() {
             return this;
         }
 
         @Override
-        protected @NotNull Bounds3I originOp(int x, int y, int z) {
+        protected @NotNull Bounds3D originOp(double x, double y, double z) {
             return new Immutable(x, y, z, lX, lY, lZ);
         }
 
         @Override
-        protected @NotNull Bounds3I lengthOp(int x, int y, int z) {
+        protected @NotNull Bounds3D lengthOp(double x, double y, double z) {
             return new Immutable(oX, oY, oZ, x, y, z);
         }
 
         @Override
-        protected @NotNull Bounds3I op(int oX, int oY, int oZ, int lX, int lY, int lZ) {
+        protected @NotNull Bounds3D op(double oX, double oY, double oZ, double lX, double lY, double lZ) {
             return new Immutable(oX, oY, oZ, lX, lY, lZ);
         }
     }
@@ -1031,57 +986,57 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         }
 
         @Override
-        public int originX() {
+        public double originX() {
             return mutable.oX;
         }
 
         @Override
-        public int originY() {
+        public double originY() {
             return mutable.oY;
         }
 
         @Override
-        public int originZ() {
+        public double originZ() {
             return mutable.oZ;
         }
 
         @Override
-        public int lengthX() {
+        public double lengthX() {
             return mutable.lX;
         }
 
         @Override
-        public int lengthY() {
+        public double lengthY() {
             return mutable.lY;
         }
 
         @Override
-        public int lengthZ() {
+        public double lengthZ() {
             return mutable.lZ;
         }
 
         @Override
-        public @NotNull Bounds3I immutable() {
+        public @NotNull Bounds3D immutable() {
             return new Immutable(mutable.oX, mutable.oY, mutable.oZ, mutable.lX, mutable.lY, mutable.lZ);
         }
 
         @Override
-        public @NotNull Bounds3I immutableView() {
+        public @NotNull Bounds3D immutableView() {
             return this;
         }
 
         @Override
-        protected @NotNull Bounds3I originOp(int x, int y, int z) {
+        protected @NotNull Bounds3D originOp(double x, double y, double z) {
             return new Immutable(x, y, z, mutable.lX, mutable.lY, mutable.lZ);
         }
 
         @Override
-        protected @NotNull Bounds3I lengthOp(int x, int y, int z) {
+        protected @NotNull Bounds3D lengthOp(double x, double y, double z) {
             return new Immutable(mutable.oX, mutable.oY, mutable.oZ, x, y, z);
         }
 
         @Override
-        protected @NotNull Bounds3I op(int oX, int oY, int oZ, int lX, int lY, int lZ) {
+        protected @NotNull Bounds3D op(double oX, double oY, double oZ, double lX, double lY, double lZ) {
             return new Immutable(oX, oY, oZ, lX, lY, lZ);
         }
     }

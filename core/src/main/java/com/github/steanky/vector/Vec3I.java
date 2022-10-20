@@ -19,19 +19,110 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
     Vec3I ORIGIN = VecCache.cached(0, 0, 0);
 
     /**
+     * Returns the shared thread local mutable vector for use by the calling thread. Note that there is only one
+     * instance created per thread, and so the value of the vector when calling this method will be whatever it was last
+     * set to by the calling thread. If the calling thread has not obtained an instance previously, the vector will be
+     * set to the origin (0, 0, 0).
+     *
+     * @return the shared thread local mutable vector
+     */
+    static @NotNull Vec3I threadLocal() {
+        return VecCache.THREAD_LOCAL_3I.get();
+    }
+
+    /**
+     * Creates a new mutable vector.
+     *
+     * @param x the initial x-component
+     * @param y the initial y-component
+     * @param z the initial z-component
+     *
+     * @return a new mutable vector
+     */
+    static @NotNull Vec3I mutable(int x, int y, int z) {
+        return new Mutable(x, y, z);
+    }
+
+    /**
+     * Obtains an immutable vector for the provided coordinates. Common values, such as (0, 0, 0), may be cached.
+     *
+     * @param x the x-component
+     * @param y the y-component
+     * @param z the z-component
+     *
+     * @return an immutable vector
+     */
+    static @NotNull Vec3I immutable(int x, int y, int z) {
+        return VecCache.cached(x, y, z);
+    }
+
+    /**
+     * Creates a mutable vector from the result of calling {@link Math#floor(double)} on each component.
+     *
+     * @param x the x-component
+     * @param y the y-component
+     * @param z the z-component
+     *
+     * @return a mutable floored vector
+     */
+    static @NotNull Vec3I mutableFloored(double x, double y, double z) {
+        return mutable((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
+    }
+
+    /**
+     * Creates a mutable vector from the result of calling {@link Math#floor(double)} on each component of the provided
+     * double-precision vector.
+     *
+     * @param other the double-precision vector
+     *
+     * @return a mutable floored vector
+     */
+    static @NotNull Vec3I mutableFloored(@NotNull Vec3D other) {
+        return mutableFloored(other.x(), other.y(), other.z());
+    }
+
+    /**
+     * Creates an immutable vector from the result of calling {@link Math#floor(double)} on each component.
+     *
+     * @param x the x-component
+     * @param y the y-component
+     * @param z the z-component
+     *
+     * @return an immutable floored vector
+     */
+    static @NotNull Vec3I immutableFloored(double x, double y, double z) {
+        return VecCache.cached((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
+    }
+
+    /**
+     * Creates an immutable vector from the result of calling {@link Math#floor(double)} on each component of the
+     * provided double-precision vector.
+     *
+     * @param other the double-precision vector
+     *
+     * @return an immutable floored vector
+     */
+    static @NotNull Vec3I immutableFloored(@NotNull Vec3D other) {
+        return immutableFloored(other.x(), other.y(), other.z());
+    }
+
+    /**
      * The x-component of this vector.
+     *
      * @return the x-component of this vector
      */
     int x();
 
     /**
      * The y-component of this vector.
+     *
      * @return the y-component of this vector
      */
     int y();
 
     /**
      * The z-component of this vector.
+     *
      * @return the z-component of this vector
      */
     int z();
@@ -42,6 +133,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the x-component to add
      * @param y the y-component to add
      * @param z the z-component to add
+     *
      * @return the sum of this vector and the provided coordinates
      */
     @NotNull Vec3I add(int x, int y, int z);
@@ -50,6 +142,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Adds a vector to this one.
      *
      * @param other the vector to add
+     *
      * @return the sum of this vector and another
      */
     default @NotNull Vec3I add(@NotNull Vec3I other) {
@@ -60,6 +153,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Adds the same value to each of this vector's components.
      *
      * @param c the value to add
+     *
      * @return a vector made from adding the given value to each component of this vector
      */
     default @NotNull Vec3I add(int c) {
@@ -72,6 +166,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the x-component to subtract
      * @param y the y-component to subtract
      * @param z the z-component to subtract
+     *
      * @return the difference of this vector and another
      */
     @NotNull Vec3I sub(int x, int y, int z);
@@ -80,6 +175,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Subtracts another vector from this one.
      *
      * @param other the vector to subtract from this one
+     *
      * @return the difference between this vector and another
      */
     default @NotNull Vec3I sub(@NotNull Vec3I other) {
@@ -90,6 +186,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Subtracts the same value from each of this vector's components.
      *
      * @param c the value to subtract
+     *
      * @return a vector made from subtracting the given value from each component of this vector
      */
     default @NotNull Vec3I sub(int c) {
@@ -103,6 +200,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the x-component to multiply by
      * @param y the y-component to multiply by
      * @param z the z-component to multiply by
+     *
      * @return the product of this vector and another
      */
     @NotNull Vec3I mul(int x, int y, int z);
@@ -112,16 +210,18 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * equivalent component of the given vector.
      *
      * @param other the vector to multiply with this one
+     *
      * @return the product of this vector and another
      */
     default @NotNull Vec3I mul(@NotNull Vec3I other) {
-        return mul(other.x(), other.y(),other.z());
+        return mul(other.x(), other.y(), other.z());
     }
 
     /**
      * Multiplies this vector by a scalar.
      *
      * @param c the scalar to multiply by
+     *
      * @return the product of this vector and a scalar
      */
     default @NotNull Vec3I mul(int c) {
@@ -135,6 +235,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the x-component to divide by
      * @param y the y-component to divide by
      * @param z the z-component to divide by
+     *
      * @return the quotient of this vector and another
      */
     @NotNull Vec3I div(int x, int y, int z);
@@ -144,17 +245,18 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * component of the given vector.
      *
      * @param other the vector to divide this one by
+     *
      * @return the quotient of this vector and another
      */
     default @NotNull Vec3I div(@NotNull Vec3I other) {
         return div(other.x(), other.y(), other.z());
     }
 
-
     /**
      * Divides this vector by a scalar.
      *
      * @param c the scalar to divide by
+     *
      * @return the quotient of this vector and the scalar
      */
     default @NotNull Vec3I div(int c) {
@@ -182,6 +284,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the x-component of the other vector
      * @param y the y-component of the other vector
      * @param z the z-component of the other vector
+     *
      * @return the distance between this vector and the other
      */
     double distanceTo(int x, int y, int z);
@@ -190,6 +293,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Computes the distance between this vector and another.
      *
      * @param other the other vector
+     *
      * @return the distance between this vector and the other
      */
     default double distanceTo(@NotNull Vec3I other) {
@@ -202,6 +306,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the x-component of the other vector
      * @param y the y-component of the other vector
      * @param z the z-component of the other vector
+     *
      * @return the squared distance between this vector and the other
      */
     double distanceSquaredTo(int x, int y, int z);
@@ -210,6 +315,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Computes the squared distance between this vector and another.
      *
      * @param other the other vector
+     *
      * @return the squared distance between this vector and the other
      */
     default double distanceSquaredTo(@NotNull Vec3I other) {
@@ -222,6 +328,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the x-component
      * @param y the y-component
      * @param z the z-component
+     *
      * @return the dot product of this vector and another
      */
     int dot(int x, int y, int z);
@@ -230,6 +337,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Returns the dot product of this vector and another.
      *
      * @param other the other vector
+     *
      * @return the dot product of this vector and another
      */
     default int dot(@NotNull Vec3I other) {
@@ -242,6 +350,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the x-component
      * @param y the y-component
      * @param z the z-component
+     *
      * @return the cross product of this vector and another
      */
     @NotNull Vec3I cross(int x, int y, int z);
@@ -250,6 +359,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Returns the cross product of this vector and another.
      *
      * @param other the other vector
+     *
      * @return the cross product of this vector and another
      */
     default @NotNull Vec3I cross(@NotNull Vec3I other) {
@@ -298,6 +408,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @param x the new x-coordinate
      * @param y the new y-coordinate
      * @param z the new z-coordinate
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3I set(int x, int y, int z) {
@@ -308,6 +419,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Sets the value of this vector.
      *
      * @param other the vector whose components will be used to set this vector's
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3I set(@NotNull Vec3I other) {
@@ -318,6 +430,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Sets the x-coordinate of this vector.
      *
      * @param x the new x-coordinate
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3I setX(int x) {
@@ -328,6 +441,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Sets the y-coordinate of this vector.
      *
      * @param y the new y-coordinate
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3I setY(int y) {
@@ -338,92 +452,11 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * Sets the z-coordinate of this vector.
      *
      * @param z the new z-coordinate
+     *
      * @return this instance, for chaining
      */
     default @NotNull Vec3I setZ(int z) {
         throw new UnsupportedOperationException();
-    }
-
-    /**
-     * Returns the shared thread local mutable vector for use by the calling thread. Note that there is only one
-     * instance created per thread, and so the value of the vector when calling this method will be whatever it was last
-     * set to by the calling thread. If the calling thread has not obtained an instance previously, the vector will be
-     * set to the origin (0, 0, 0).
-     *
-     * @return the shared thread local mutable vector
-     */
-    static @NotNull Vec3I threadLocal() {
-        return VecCache.THREAD_LOCAL_3I.get();
-    }
-
-    /**
-     * Creates a new mutable vector.
-     *
-     * @param x the initial x-component
-     * @param y the initial y-component
-     * @param z the initial z-component
-     * @return a new mutable vector
-     */
-    static @NotNull Vec3I mutable(int x, int y, int z) {
-        return new Mutable(x, y, z);
-    }
-
-    /**
-     * Obtains an immutable vector for the provided coordinates. Common values, such as (0, 0, 0), may be cached.
-     *
-     * @param x the x-component
-     * @param y the y-component
-     * @param z the z-component
-     * @return an immutable vector
-     */
-    static @NotNull Vec3I immutable(int x, int y, int z) {
-        return VecCache.cached(x, y, z);
-    }
-
-    /**
-     * Creates a mutable vector from the result of calling {@link Math#floor(double)} on each component.
-     *
-     * @param x the x-component
-     * @param y the y-component
-     * @param z the z-component
-     * @return a mutable floored vector
-     */
-    static @NotNull Vec3I mutableFloored(double x, double y, double z) {
-        return mutable((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
-    }
-
-    /**
-     * Creates a mutable vector from the result of calling {@link Math#floor(double)} on each component of the provided
-     * double-precision vector.
-     *
-     * @param other the double-precision vector
-     * @return a mutable floored vector
-     */
-    static @NotNull Vec3I mutableFloored(@NotNull Vec3D other) {
-        return mutableFloored(other.x(), other.y(), other.z());
-    }
-
-    /**
-     * Creates an immutable vector from the result of calling {@link Math#floor(double)} on each component.
-     *
-     * @param x the x-component
-     * @param y the y-component
-     * @param z the z-component
-     * @return an immutable floored vector
-     */
-    static @NotNull Vec3I immutableFloored(double x, double y, double z) {
-        return VecCache.cached((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
-    }
-
-    /**
-     * Creates an immutable vector from the result of calling {@link Math#floor(double)} on each component of the
-     * provided double-precision vector.
-     *
-     * @param other the double-precision vector
-     * @return an immutable floored vector
-     */
-    static @NotNull Vec3I immutableFloored(@NotNull Vec3D other) {
-        return immutableFloored(other.x(), other.y(), other.z());
     }
 
     /**
@@ -547,6 +580,7 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
          * @param x the x-coordinate
          * @param y the y-coordinate
          * @param z the z-coordinate
+         *
          * @return this vector if mutable, or a new immutable vector
          */
         protected abstract @NotNull Vec3I op(int x, int y, int z);

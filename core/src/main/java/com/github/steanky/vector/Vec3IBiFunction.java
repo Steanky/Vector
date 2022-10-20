@@ -15,6 +15,7 @@ public interface Vec3IBiFunction<T, R> {
      * @param y the y-coordinate
      * @param z the z-coordinate
      * @param t the object
+     *
      * @return the result of this function
      */
     R apply(int x, int y, int z, T t);

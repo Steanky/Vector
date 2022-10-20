@@ -26,6 +26,7 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      * @param x the x-coordinate
      * @param y the y-coordinate
      * @param z the z-coordinate
+     *
      * @return null if the underlying value is null, or no value exists at the specified location; else the value that
      * exists at the coordinate
      */
@@ -34,10 +35,11 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
     /**
      * Puts a value at a specific coordinate and returns the old value.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
+     * @param x     the x-coordinate
+     * @param y     the y-coordinate
+     * @param z     the z-coordinate
      * @param value the value to put in the map
+     *
      * @return null if the underlying value was null, or no value existed at the specified location; else the value
      * previously located at the coordinate before it was replaced
      */
@@ -49,6 +51,7 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      * @param x the x-coordinate
      * @param y the y-coordinate
      * @param z the z-coordinate
+     *
      * @return null if the underlying value was null, or no value existed at the specified location; else the value
      * previously located at the coordinate before it was removed
      */
@@ -57,10 +60,11 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
     /**
      * Removes a matching value from the map.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
+     * @param x     the x-coordinate
+     * @param y     the y-coordinate
+     * @param z     the z-coordinate
      * @param value the value to match
+     *
      * @return true if the value was removed, false otherwise
      */
     boolean remove(int x, int y, int z, Object value);
@@ -71,6 +75,7 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      * @param x the x-coordinate
      * @param y the y-coordinate
      * @param z the z-coordinate
+     *
      * @return true if the map contains a value here; false otherwise
      */
     boolean containsKey(int x, int y, int z);
@@ -79,10 +84,11 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      * Returns the value currently at the coordinate if it exists; else computes a new value, enters it into the map,
      * and returns it.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
+     * @param x               the x-coordinate
+     * @param y               the y-coordinate
+     * @param z               the z-coordinate
      * @param mappingFunction the mapping function used to create a new value if necessary
+     *
      * @return the value currently at the coordinate; else the value created by the mapping function after it is added
      * to the map
      */
@@ -91,10 +97,11 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
     /**
      * Remaps and returns the value at the coordinate if it exists.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
+     * @param x                 the x-coordinate
+     * @param y                 the y-coordinate
+     * @param z                 the z-coordinate
      * @param remappingFunction the remapping function
+     *
      * @return the computed value if it previously existed; otherwise null
      */
     T computeIfPresent(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction);
@@ -103,10 +110,11 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      * Attempts to compute a value. If the remapping function returns null, the value is removed; otherwise, it is
      * entered into the map.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
+     * @param x                 the x-coordinate
+     * @param y                 the y-coordinate
+     * @param z                 the z-coordinate
      * @param remappingFunction the remapping function
+     *
      * @return the result of the remapping function
      */
     T compute(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction);
@@ -114,10 +122,11 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
     /**
      * Puts a new value into the map if it is absent.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
+     * @param x     the x-coordinate
+     * @param y     the y-coordinate
+     * @param z     the z-coordinate
      * @param value the value to put
+     *
      * @return the old value if it exists, or the new value if it was just entered
      */
     T putIfAbsent(int x, int y, int z, T value);
@@ -132,10 +141,11 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
     /**
      * Replaces the value at the coordinate, if it exists. Otherwise the map is unchanged.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
+     * @param x     the x-coordinate
+     * @param y     the y-coordinate
+     * @param z     the z-coordinate
      * @param value the value to replace with
+     *
      * @return the replaced value, or null if there was no value
      */
     T replace(int x, int y, int z, T value);
@@ -144,11 +154,12 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      * Replaces the value at the coordinate, if it exists and is equal to {@code oldValue}. Otherwise the map is
      * unchanged.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
+     * @param x        the x-coordinate
+     * @param y        the y-coordinate
+     * @param z        the z-coordinate
      * @param oldValue the old value to replace
      * @param newValue the value to replace {@code oldValue} with
+     *
      * @return the replaced value, or null if there was no value (or oldValue is not equal to the value previously in
      * the map)
      */
@@ -164,10 +175,11 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
     /**
      * Gets the value at the coordinate if it is present; otherwise returns the given default value.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
+     * @param x   the x-coordinate
+     * @param y   the y-coordinate
+     * @param z   the z-coordinate
      * @param def the default value
+     *
      * @return the value present at the coordinate if it exists; else the default value
      */
     T getOrDefault(int x, int y, int z, T def);
@@ -176,11 +188,12 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      * If the given coordinate does not already have a value, associates it with the value. Otherwise, the merging
      * function is called with the old value and the new value.
      *
-     * @param x the x-coordinate
-     * @param y the y-coordinate
-     * @param z the z-coordinate
-     * @param value the new value
+     * @param x             the x-coordinate
+     * @param y             the y-coordinate
+     * @param z             the z-coordinate
+     * @param value         the new value
      * @param mergeFunction the function used to merge the old value with the new value
+     *
      * @return the value just entered into the map if none previously existed; else the value computed by the merge
      * function
      */

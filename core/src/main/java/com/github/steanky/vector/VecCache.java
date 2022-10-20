@@ -2,8 +2,6 @@ package com.github.steanky.vector;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Predicate;
-
 /**
  * Internal class for caching vectors. Not part of the public API.
  */
@@ -30,6 +28,7 @@ class VecCache {
      * @param x the x-component
      * @param y the y-component
      * @param z the z-component
+     *
      * @return a new immutable vector, or a cached instance if possible
      */
     static @NotNull Vec3I cached(int x, int y, int z) {

@@ -10,6 +10,7 @@ public interface Vec3IPredicate {
      * @param x the x-coordinate
      * @param y the y-coordinate
      * @param z the z-coordinate
+     *
      * @return true if the predicat succeeds; false otherwise
      */
     boolean test(int x, int y, int z);

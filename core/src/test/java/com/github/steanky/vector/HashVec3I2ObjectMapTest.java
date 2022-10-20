@@ -15,15 +15,14 @@ class HashVec3I2ObjectMapTest {
 
     @Test
     void maximumSpace() {
-        assertDoesNotThrow(() -> new HashVec3I2ObjectMap<>(0, 0, 0,
-                Integer.MAX_VALUE, //31 bits
+        assertDoesNotThrow(() -> new HashVec3I2ObjectMap<>(0, 0, 0, Integer.MAX_VALUE, //31 bits
                 Integer.MAX_VALUE, //31 bits (62 total)
                 3)); //2 bits (64 total, maximum capacity)
 
-        assertThrows(IllegalArgumentException.class, () -> new HashVec3I2ObjectMap<>(0, 0, 0,
-                Integer.MAX_VALUE, //31 bits
-                Integer.MAX_VALUE, //31 bits (62 total)
-                4)); //3 bits (65 total, capacity exceeded)
+        assertThrows(IllegalArgumentException.class,
+                () -> new HashVec3I2ObjectMap<>(0, 0, 0, Integer.MAX_VALUE, //31 bits
+                        Integer.MAX_VALUE, //31 bits (62 total)
+                        4)); //3 bits (65 total, capacity exceeded)
     }
 
     @Test

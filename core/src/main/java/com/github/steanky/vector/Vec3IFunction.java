@@ -13,6 +13,7 @@ public interface Vec3IFunction<T> {
      * @param x the x-coordinate
      * @param y the y-coordinate
      * @param z the z-coordinate
+     *
      * @return the function's value
      */
     T apply(int x, int y, int z);

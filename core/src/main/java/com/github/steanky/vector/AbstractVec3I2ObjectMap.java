@@ -27,7 +27,7 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
 
     @Override
     public final T get(Object key) {
-        if(!(key instanceof Vec3I vec)) {
+        if (!(key instanceof Vec3I vec)) {
             return null;
         }
 
@@ -96,29 +96,24 @@ public abstract class AbstractVec3I2ObjectMap<T> extends AbstractMap<Vec3I, T> i
     @Override
     public final T computeIfAbsent(@NotNull Vec3I key, @NotNull Function<? super Vec3I, ? extends T> mappingFunction) {
         Objects.requireNonNull(mappingFunction);
-        return computeIfAbsent(key.x(), key.y(), key.z(), (x, y, z) -> mappingFunction.apply(Vec3I
-                .immutable(x, y, z)));
+        return computeIfAbsent(key.x(), key.y(), key.z(), (x, y, z) -> mappingFunction.apply(Vec3I.immutable(x, y, z)));
     }
 
     @Override
-    public final T computeIfPresent(@NotNull Vec3I key,
-            @NotNull BiFunction<? super Vec3I, ? super T, ? extends T> remappingFunction) {
+    public final T computeIfPresent(@NotNull Vec3I key, @NotNull BiFunction<? super Vec3I, ? super T, ? extends T> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
-        return computeIfPresent(key.x(), key.y(), key.z(), (x, y, z, t) -> remappingFunction.apply(Vec3I
-                .immutable(x, y, z), t));
+        return computeIfPresent(key.x(), key.y(), key.z(),
+                (x, y, z, t) -> remappingFunction.apply(Vec3I.immutable(x, y, z), t));
     }
 
     @Override
-    public final T compute(@NotNull Vec3I key,
-            @NotNull BiFunction<? super Vec3I, ? super T, ? extends T> remappingFunction) {
+    public final T compute(@NotNull Vec3I key, @NotNull BiFunction<? super Vec3I, ? super T, ? extends T> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
-        return compute(key.x(), key.y(), key.z(), (x, y, z, t) -> remappingFunction.apply(Vec3I
-                .immutable(x, y, z), t));
+        return compute(key.x(), key.y(), key.z(), (x, y, z, t) -> remappingFunction.apply(Vec3I.immutable(x, y, z), t));
     }
 
     @Override
-    public final T merge(@NotNull Vec3I key, @NotNull T value,
-            @NotNull BiFunction<? super T, ? super T, ? extends T> remappingFunction) {
+    public final T merge(@NotNull Vec3I key, @NotNull T value, @NotNull BiFunction<? super T, ? super T, ? extends T> remappingFunction) {
         return merge(key.x(), key.y(), key.z(), value, remappingFunction);
     }
 }

@@ -25,7 +25,8 @@ This repository began when I got tired of duplicating all my initial code for ne
 
 ## Install
 
-As a template repository, users are expected to generate their own repositories from this one using GitHub's template repository feature.
+As a template repository, users are expected to generate their own repositories from this one using GitHub's template
+repository feature.
 
 ## Usage
 
@@ -33,7 +34,8 @@ Template uses Java 17 and Gradle 7.4 by default.
 
 ### Gradle Plugins
 
-Template specifies a few plugins in `buildSrc`: `java-conventions` and `library-conventions`. Modules should generally rely on one or the other as follows (in their respective `build.gradle.kts`): 
+Template specifies a few plugins in `buildSrc`: `java-conventions` and `library-conventions`. Modules should generally
+rely on one or the other as follows (in their respective `build.gradle.kts`):
 
 ```kotlin
 plugins {
@@ -41,17 +43,21 @@ plugins {
 }
 ```
 
-One can edit the plugin scripts in `buildSrc` to apply build configuration changes globally across all modules that use them.
+One can edit the plugin scripts in `buildSrc` to apply build configuration changes globally across all modules that use
+them.
 
-`java-conventions` specifies the Maven public repository, as well as some dependencies: junit-jupiter, mockito, and jetbrains-annotations. It also configures the `Jar` task to copy the module or project license into any built jars.
+`java-conventions` specifies the Maven public repository, as well as some dependencies: junit-jupiter, mockito, and
+jetbrains-annotations. It also configures the `Jar` task to copy the module or project license into any built jars.
 
 `java-library` supplies everything in `java-conventions`, with the addition of also producing javadoc and source jars.
 
 ### Gradle Modules
 
-By default, there is a single module, `template-java`, that is included by default. Module names should be prefixed by the root project name (`template` being the default). Module *directory* names should not have this prefix.
+By default, there is a single module, `template-java`, that is included by default. Module names should be prefixed by
+the root project name (`template` being the default). Module *directory* names should not have this prefix.
 
-Assuming `git` is available from the command line, the buildscript will automatically generate (and add) a new `.gitignore` file which excludes the `./build` directory (relative to each module). 
+Assuming `git` is available from the command line, the buildscript will automatically generate (and add) a
+new `.gitignore` file which excludes the `./build` directory (relative to each module).
 
 ## Maintainers
 
