@@ -2,6 +2,8 @@ package com.github.steanky.vector;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.function.Predicate;
+
 /**
  * Internal class for caching vectors. Not part of the public API.
  */

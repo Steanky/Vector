@@ -553,52 +553,6 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
     }
 
     /**
-     * An immutable view of a mutable vector.
-     */
-    final class View extends Base {
-        private final Mutable target;
-
-        private View(Mutable target) {
-            this.target = target;
-        }
-
-        @Override
-        public int x() {
-            return target.x;
-        }
-
-        @Override
-        public int y() {
-            return target.y;
-        }
-
-        @Override
-        public int z() {
-            return target.z;
-        }
-
-        @Override
-        public @NotNull Vec3I immutable() {
-            return VecCache.cached(target.x, target.y, target.z);
-        }
-
-        @Override
-        public @NotNull Vec3I immutableView() {
-            return this;
-        }
-
-        @Override
-        protected @NotNull Vec3I op(int x, int y, int z) {
-            return VecCache.cached(x, y, z);
-        }
-
-        @Override
-        public String toString() {
-            return "Vec3I.View{target=" + target + "}";
-        }
-    }
-
-    /**
      * The immutable vector type.
      */
     final class Immutable extends Base {
@@ -739,6 +693,52 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
         @Override
         public String toString() {
             return "Vec3I.Mutable{x=" + x + ", y=" + y + ", z=" + z + "}";
+        }
+    }
+
+    /**
+     * An immutable view of a mutable vector.
+     */
+    final class View extends Base {
+        private final Mutable target;
+
+        private View(Mutable target) {
+            this.target = target;
+        }
+
+        @Override
+        public int x() {
+            return target.x;
+        }
+
+        @Override
+        public int y() {
+            return target.y;
+        }
+
+        @Override
+        public int z() {
+            return target.z;
+        }
+
+        @Override
+        public @NotNull Vec3I immutable() {
+            return VecCache.cached(target.x, target.y, target.z);
+        }
+
+        @Override
+        public @NotNull Vec3I immutableView() {
+            return this;
+        }
+
+        @Override
+        protected @NotNull Vec3I op(int x, int y, int z) {
+            return VecCache.cached(x, y, z);
+        }
+
+        @Override
+        public String toString() {
+            return "Vec3I.View{target=" + target + "}";
         }
     }
 }

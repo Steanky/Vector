@@ -503,52 +503,6 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
     }
 
     /**
-     * An immutable view of a mutable vector.
-     */
-    final class View extends Base {
-        private final Mutable target;
-
-        private View(Mutable target) {
-            this.target = target;
-        }
-
-        @Override
-        public double x() {
-            return target.x;
-        }
-
-        @Override
-        public double y() {
-            return target.y;
-        }
-
-        @Override
-        public double z() {
-            return target.z;
-        }
-
-        @Override
-        public @NotNull Vec3D immutable() {
-            return new Immutable(target.x, target.y, target.z);
-        }
-
-        @Override
-        public @NotNull Vec3D immutableView() {
-            return this;
-        }
-
-        @Override
-        protected @NotNull Vec3D op(double x, double y, double z) {
-            return new Immutable(x, y, z);
-        }
-
-        @Override
-        public String toString() {
-            return "Vec3D.View{target=" + target + "}";
-        }
-    }
-
-    /**
      * The immutable vector type.
      */
     final class Immutable extends Base {
@@ -688,6 +642,52 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
         @Override
         public String toString() {
             return "Vec3D.Mutable{x=" + x + ", y=" + y + ", z=" + z + "}";
+        }
+    }
+
+    /**
+     * An immutable view of a mutable vector.
+     */
+    final class View extends Base {
+        private final Mutable target;
+
+        private View(Mutable target) {
+            this.target = target;
+        }
+
+        @Override
+        public double x() {
+            return target.x;
+        }
+
+        @Override
+        public double y() {
+            return target.y;
+        }
+
+        @Override
+        public double z() {
+            return target.z;
+        }
+
+        @Override
+        public @NotNull Vec3D immutable() {
+            return new Immutable(target.x, target.y, target.z);
+        }
+
+        @Override
+        public @NotNull Vec3D immutableView() {
+            return this;
+        }
+
+        @Override
+        protected @NotNull Vec3D op(double x, double y, double z) {
+            return new Immutable(x, y, z);
+        }
+
+        @Override
+        public String toString() {
+            return "Vec3D.View{target=" + target + "}";
         }
     }
 }
