@@ -39,4 +39,59 @@ class HashVec3I2ObjectMapTest {
             }
         }
     }
+
+    @Test
+    void computeIfAbsent() {
+        Vec3I2ObjectMap<Vec3I> map = new HashVec3I2ObjectMap<>(-4, -4, -4, 8, 8, 8);
+
+        Vec3I result = map.computeIfAbsent(0, 0, 0, (x, y, z) -> Vec3I.immutable(10, 10, 10));
+        assertEquals(Vec3I.immutable(10, 10, 10), result);
+        assertTrue(map.containsKey(0, 0, 0));
+
+        Vec3I result2 = map.computeIfAbsent(0, 0, 0, (x, y, z) -> Vec3I.immutable(20, 20, 20));
+        assertSame(result, result2);
+    }
+
+    @Test
+    void computeIfPresent() {
+        Vec3I2ObjectMap<Vec3I> map = new HashVec3I2ObjectMap<>(-4, -4, -4, 8, 8, 8);
+
+        Vec3I result = map.computeIfPresent(0, 0, 0, (x, y, z, old) -> Vec3I.ORIGIN);
+        assertNull(result);
+
+        map.put(0, 0, 0, Vec3I.ORIGIN);
+        map.computeIfPresent(0, 0, 0, (x, y, z, old) -> {
+            assertSame(Vec3I.ORIGIN, old);
+            return null;
+        });
+        assertFalse(map.containsKey(0, 0, 0));
+        assertEquals(0, map.size());
+
+        map.put(0, 0, 0, Vec3I.ORIGIN);
+        Vec3I value = map.computeIfPresent(0, 0, 0, (x, y, z, old) -> Vec3I.immutable(1, 1, 1));
+        assertEquals(Vec3I.immutable(1, 1, 1), value);
+        assertTrue(map.containsKey(0, 0, 0));
+        assertEquals(1, map.size());
+    }
+
+    @Test
+    void compute() {
+        Vec3I2ObjectMap<Vec3I> map = new HashVec3I2ObjectMap<>(-4, -4, -4, 8, 8, 8);
+
+        Vec3I value = map.compute(0, 0, 0, (x, y, z, old) -> {
+            assertNull(old);
+            return Vec3I.ORIGIN;
+        });
+        assertSame(Vec3I.ORIGIN, value);
+        assertEquals(1, map.size());
+        assertTrue(map.containsKey(0, 0, 0));
+
+        Vec3I removedValue = map.compute(0, 0, 0, (x, y, z, old) -> {
+            assertNotNull(old);
+            return null;
+        });
+        assertNull(removedValue);
+        assertFalse(map.containsKey(0, 0, 0));
+        assertEquals(0, map.size());
+    }
 }
