@@ -186,19 +186,60 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     @Override
     public T computeIfAbsent(int x, int y, int z, @NotNull Vec3IFunction<? extends T> mappingFunction) {
         Objects.requireNonNull(mappingFunction);
-        return underlyingMap.computeIfAbsent(pack(x, y, z), ignored -> mappingFunction.apply(x, y, z));
+
+        long key = pack(x, y, z);
+        T v = underlyingMap.get(key);
+        if (v != null || underlyingMap.containsKey(key)) {
+            return v;
+        }
+
+        T functionResult = mappingFunction.apply(x, y, z);
+        if (functionResult == null) {
+            return null;
+        }
+
+        underlyingMap.put(key, functionResult);
+        return functionResult;
     }
 
     @Override
     public T computeIfPresent(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
-        return underlyingMap.computeIfPresent(pack(x, y, z), (ignored, t) -> remappingFunction.apply(x, y, z, t));
+
+        long key = pack(x, y, z);
+        T oldValue = underlyingMap.get(key);
+        if (oldValue == null && !underlyingMap.containsKey(key)) {
+            return null;
+        }
+
+        T newValue = remappingFunction.apply(x, y, z, oldValue);
+        if (newValue == null) {
+            underlyingMap.remove(key);
+            return null;
+        }
+
+        underlyingMap.put(key, newValue);
+        return newValue;
     }
 
     @Override
     public T compute(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
-        return underlyingMap.compute(pack(x, y, z), (ignored, t) -> remappingFunction.apply(x, y, z, t));
+
+        long key = pack(x, y, z);
+        T oldValue = underlyingMap.get(key);
+        boolean contained = oldValue != null || underlyingMap.containsKey(key);
+        T newValue = remappingFunction.apply(x, y, z, contained ? oldValue : null);
+        if (newValue == null) {
+            if (contained) {
+                underlyingMap.remove(key);
+            }
+
+            return null;
+        }
+
+        underlyingMap.put(key, newValue);
+        return newValue;
     }
 
     @Override
