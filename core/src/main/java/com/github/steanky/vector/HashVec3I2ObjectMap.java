@@ -16,7 +16,7 @@ import java.util.function.BiFunction;
  * @param <T> the type of object held in the map
  */
 public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
-    private final Long2ObjectMap<T> underlyingMap;
+    private final Long2ObjectOpenHashMap<T> underlyingMap;
 
     private final int x;
     private final int y;
@@ -386,8 +386,25 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
             @Override
             public void clear() {
-                underlyingMap.clear();
+                entrySet.clear();
             }
         };
+    }
+
+    /**
+     * Calls {@link Long2ObjectOpenHashMap#trim()} on the underlying map.
+     * @return true if there was enough memory to trim the map
+     */
+    public boolean trim() {
+        return underlyingMap.trim();
+    }
+
+    /**
+     * Calls {@link Long2ObjectOpenHashMap#trim(int)} on the underlying map.
+     * @param n the threshold for trimming
+     * @return true if there was enough memory to trim the map
+     */
+    public boolean trim(int n) {
+        return underlyingMap.trim(n);
     }
 }
