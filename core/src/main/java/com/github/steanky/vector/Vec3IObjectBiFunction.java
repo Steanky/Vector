@@ -7,7 +7,7 @@ package com.github.steanky.vector;
  * @param <R> the object type to be returned
  */
 @FunctionalInterface
-public interface Vec3IBiFunction<T, R> {
+public interface Vec3IObjectBiFunction<T, R> {
     /**
      * Calls this function with the provided coordinate and object.
      *

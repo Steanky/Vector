@@ -6,7 +6,7 @@ package com.github.steanky.vector;
  * @param <T> the type of object accepted
  */
 @FunctionalInterface
-public interface Vec3IBiConsumer<T> {
+public interface Vec3IObjectBiConsumer<T> {
     /**
      * Accepts some values.
      *

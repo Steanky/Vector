@@ -57,6 +57,42 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
     }
 
     /**
+     * Computes the squared distance between two points.
+     *
+     * @param x1 the first x-coordinate
+     * @param y1 the first y-coordinate
+     * @param z1 the first z-coordinate
+     * @param x2 the second x-coordinate
+     * @param y2 the second y-coordinate
+     * @param z2 the second z-coordinate
+     * @return the squared distance between the two points
+     */
+    static double distanceSquared(double x1, double y1, double z1, double x2, double y2, double z2) {
+        double dX = x1 - x2;
+        double dY = y1 - y2;
+        double dZ = z1 - z2;
+        return dX * dX + dY * dY + dZ * dZ;
+    }
+
+    /**
+     * Computes the distance between two points.
+     *
+     * @param x1 the first x-coordinate
+     * @param y1 the first y-coordinate
+     * @param z1 the first z-coordinate
+     * @param x2 the second x-coordinate
+     * @param y2 the second y-coordinate
+     * @param z2 the second z-coordinate
+     * @return the distance between the two points
+     */
+    static double distance(double x1, double y1, double z1, double x2, double y2, double z2) {
+        double dX = x1 - x2;
+        double dY = y1 - y2;
+        double dZ = z1 - z2;
+        return Math.sqrt(dX * dX + dY * dY + dZ * dZ);
+    }
+
+    /**
      * The x-component of this vector.
      *
      * @return the x-component of this vector

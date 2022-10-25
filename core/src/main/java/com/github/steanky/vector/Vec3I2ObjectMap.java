@@ -104,7 +104,7 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      *
      * @return the computed value if it previously existed; otherwise null
      */
-    T computeIfPresent(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction);
+    T computeIfPresent(int x, int y, int z, @NotNull Vec3IObjectBiFunction<? super T, ? extends T> remappingFunction);
 
     /**
      * Attempts to compute a value. If the remapping function returns null, the value is removed; otherwise, it is
@@ -117,7 +117,7 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      *
      * @return the result of the remapping function
      */
-    T compute(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction);
+    T compute(int x, int y, int z, @NotNull Vec3IObjectBiFunction<? super T, ? extends T> remappingFunction);
 
     /**
      * Puts a new value into the map if it is absent.
@@ -170,7 +170,7 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      *
      * @param function the function used to construct new mappings
      */
-    void replaceAll(@NotNull Vec3IBiFunction<? super T, ? extends T> function);
+    void replaceAll(@NotNull Vec3IObjectBiFunction<? super T, ? extends T> function);
 
     /**
      * Gets the value at the coordinate if it is present; otherwise returns the given default value.
@@ -204,5 +204,5 @@ public interface Vec3I2ObjectMap<T> extends Map<Vec3I, T> {
      *
      * @param consumer the consumer to call
      */
-    void forEach(@NotNull Vec3IBiConsumer<? super T> consumer);
+    void forEach(@NotNull Vec3IObjectBiConsumer<? super T> consumer);
 }

@@ -203,7 +203,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     }
 
     @Override
-    public T computeIfPresent(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction) {
+    public T computeIfPresent(int x, int y, int z, @NotNull Vec3IObjectBiFunction<? super T, ? extends T> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
 
         long key = pack(x, y, z);
@@ -223,7 +223,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     }
 
     @Override
-    public T compute(int x, int y, int z, @NotNull Vec3IBiFunction<? super T, ? extends T> remappingFunction) {
+    public T compute(int x, int y, int z, @NotNull Vec3IObjectBiFunction<? super T, ? extends T> remappingFunction) {
         Objects.requireNonNull(remappingFunction);
 
         long key = pack(x, y, z);
@@ -279,7 +279,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     }
 
     @Override
-    public void replaceAll(@NotNull Vec3IBiFunction<? super T, ? extends T> function) {
+    public void replaceAll(@NotNull Vec3IObjectBiFunction<? super T, ? extends T> function) {
         underlyingMap.replaceAll((l, t) -> function.apply(x(l), y(l), z(l), t));
     }
 
@@ -294,7 +294,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     }
 
     @Override
-    public void forEach(@NotNull Vec3IBiConsumer<? super T> consumer) {
+    public void forEach(@NotNull Vec3IObjectBiConsumer<? super T> consumer) {
         underlyingMap.forEach((l, t) -> consumer.accept(x(l), y(l), z(l), t));
     }
 
