@@ -11,11 +11,10 @@ import java.util.function.BiFunction;
  * key vectors. Additionally, operations like {@link Vec3I2ObjectMap#get(int, int, int)} do not require the creation of
  * a potentially redundant object.
  * <p>
- * Null keys are not supported. Null values are supported, and can be distinguished from the absence of a value using
- * {@link Vec3I2ObjectMap#containsKey(int, int, int)}.
+ * Null keys are not supported. Null values may or may not be supported, at the discretion of the implementation.
  * <p>
- * Implementations may, at their discretion, disallow any number of specific coordinates for use as keys, for example as
- * part of a size limitation scheme or due to restrictions inherent in their design.
+ * Implementations may also disallow any number of specific coordinates for use as keys, for example as part of a size
+ * limitation scheme or due to restrictions inherent in their design.
  *
  * @param <T> the type of value stored in the map
  */

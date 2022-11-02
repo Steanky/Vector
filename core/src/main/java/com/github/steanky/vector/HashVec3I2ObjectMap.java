@@ -11,7 +11,8 @@ import java.util.*;
 import java.util.function.BiFunction;
 
 /**
- * Implementation of {@link Vec3I2ObjectMap} based on an internal {@link Long2ObjectOpenHashMap}.
+ * Implementation of {@link Vec3I2ObjectMap} based on an internal {@link Long2ObjectOpenHashMap}. Null keys and values
+ * are not supported.
  *
  * @param <T> the type of object held in the map
  */
@@ -165,6 +166,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
     @Override
     public T put(int x, int y, int z, T value) {
+        Objects.requireNonNull(value);
         return underlyingMap.put(pack(x, y, z), value);
     }
 
@@ -175,6 +177,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
     @Override
     public boolean remove(int x, int y, int z, Object value) {
+        Objects.requireNonNull(value);
         return underlyingMap.remove(pack(x, y, z), value);
     }
 
@@ -189,7 +192,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
         long key = pack(x, y, z);
         T v = underlyingMap.get(key);
-        if (v != null || underlyingMap.containsKey(key)) {
+        if (v != null) {
             return v;
         }
 
@@ -208,7 +211,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
         long key = pack(x, y, z);
         T oldValue = underlyingMap.get(key);
-        if (oldValue == null && !underlyingMap.containsKey(key)) {
+        if (oldValue == null) {
             return null;
         }
 
@@ -228,7 +231,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
         long key = pack(x, y, z);
         T oldValue = underlyingMap.get(key);
-        boolean contained = oldValue != null || underlyingMap.containsKey(key);
+        boolean contained = oldValue != null;
         T newValue = remappingFunction.apply(x, y, z, contained ? oldValue : null);
         if (newValue == null) {
             if (contained) {
@@ -244,6 +247,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
     @Override
     public T putIfAbsent(int x, int y, int z, T value) {
+        Objects.requireNonNull(value);
         return underlyingMap.putIfAbsent(pack(x, y, z), value);
     }
 
@@ -259,9 +263,10 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
             Map.Entry[] entries = map.entrySet().toArray(Entry[]::new);
             for (int i = 0; i < entries.length; i++) {
                 Map.Entry old = entries[i];
-                Vec3I vector = (Vec3I) old.getKey();
+                Vec3I key = (Vec3I) old.getKey();
+                Object value = Objects.requireNonNull(old.getValue());
 
-                entries[i] = Map.entry(pack(vector.x(), vector.y(), vector.z()), old.getValue());
+                entries[i] = Map.entry(pack(key.x(), key.y(), key.z()), value);
             }
 
             underlyingMap.putAll(Map.ofEntries(entries));
@@ -270,16 +275,23 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
     @Override
     public T replace(int x, int y, int z, T value) {
+        Objects.requireNonNull(value);
         return underlyingMap.replace(pack(x, y, z), value);
     }
 
     @Override
     public boolean replace(int x, int y, int z, T oldValue, T newValue) {
+        Objects.requireNonNull(newValue);
+        if (oldValue == null) {
+            return false;
+        }
+
         return underlyingMap.replace(pack(x, y, z), oldValue, newValue);
     }
 
     @Override
     public void replaceAll(@NotNull Vec3IObjectBiFunction<? super T, ? extends T> function) {
+        Objects.requireNonNull(function);
         underlyingMap.replaceAll((l, t) -> function.apply(x(l), y(l), z(l), t));
     }
 
@@ -290,6 +302,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
     @Override
     public T merge(int x, int y, int z, T value, @NotNull BiFunction<? super T, ? super T, ? extends T> mergeFunction) {
+        Objects.requireNonNull(value);
         return underlyingMap.merge(pack(x, y, z), value, mergeFunction);
     }
 
@@ -305,6 +318,10 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
     @Override
     public boolean containsValue(Object value) {
+        if (value == null) {
+            return false;
+        }
+
         return underlyingMap.containsValue(value);
     }
 
