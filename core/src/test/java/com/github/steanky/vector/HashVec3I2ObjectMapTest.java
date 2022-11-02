@@ -2,9 +2,28 @@ package com.github.steanky.vector;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class HashVec3I2ObjectMapTest {
+    @Test
+    void iterateKeys() {
+        Vec3I2ObjectMap<String> map = new HashVec3I2ObjectMap<>(0, 0, 0, 5, 5, 5);
+        map.put(0, 0, 0, "test");
+        map.put(4, 4, 4, "test2");
+
+        Set<Vec3I> actual = new HashSet<>(2);
+        Set<Vec3I> expected = Set.of(Vec3I.immutable(0, 0, 0), Vec3I.immutable(4, 4, 4));
+        map.forEach((x, y, z, s) -> {
+            actual.add(Vec3I.immutable(x, y, z));
+        });
+
+        assertEquals(expected, actual);
+
+    }
+
     @Test
     void smallSpace() {
         Vec3I2ObjectMap<String> smallSpace = new HashVec3I2ObjectMap<>(0, 0, 0, 4, 4, 4);
