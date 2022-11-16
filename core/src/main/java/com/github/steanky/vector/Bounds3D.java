@@ -468,6 +468,20 @@ public sealed interface Bounds3D permits Bounds3D.Base {
     boolean overlaps(@NotNull Bounds3D other);
 
     /**
+     * Tests if this bounding box overlaps another. The behavior of this function is undefined when any of the lengths
+     * are negative.
+     *
+     * @param ox the other origin x
+     * @param oy the other origin y
+     * @param oz the other origin z
+     * @param lx the other length x
+     * @param ly the other length y
+     * @param lz the other length z
+     * @return true if there is an overlap, false otherwise
+     */
+    boolean overlaps(double ox, double oy, double oz, double lx, double ly, double lz);
+
+    /**
      * Tests if this bounding box contains the given vector.
      *
      * @param x the x-coordinate
@@ -663,20 +677,22 @@ public sealed interface Bounds3D permits Bounds3D.Base {
 
         @Override
         public boolean overlaps(@NotNull Bounds3D other) {
-            double nx1 = maxX();
-            double ny1 = maxY();
-            double nz1 = maxZ();
+            return overlaps(other.originX(), other.originY(), other.originZ(), other.lengthX(), other.lengthY(),
+                    other.lengthZ());
+        }
 
-            double nx2 = other.maxX();
-            double ny2 = other.maxY();
-            double nz2 = other.maxZ();
+        @Override
+        public boolean overlaps(double ox, double oy, double oz, double lx, double ly, double lz) {
+            double thisMaxX = maxX();
+            double thisMaxY = maxY();
+            double thisMaxZ = maxZ();
 
-            return Math.min(originX(), nx1) < Math.max(other.originX(), nx2) &&
-                    Math.max(originX(), nx1) > Math.min(other.originX(), nx2) &&
-                    Math.min(originY(), ny1) < Math.max(other.originY(), ny2) &&
-                    Math.max(originY(), ny1) > Math.min(other.originY(), ny2) &&
-                    Math.min(originZ(), nz1) < Math.max(other.originZ(), nz2) &&
-                    Math.max(originZ(), nz1) > Math.min(other.originZ(), nz2);
+            double otherMaxX = ox + lx;
+            double otherMaxY = oy + ly;
+            double otherMaxZ = oz + lz;
+
+            return originX() < otherMaxX && originY() < otherMaxY && originZ() < otherMaxZ && thisMaxX > ox &&
+                    thisMaxY > oy && thisMaxZ > oz;
         }
 
         @Override

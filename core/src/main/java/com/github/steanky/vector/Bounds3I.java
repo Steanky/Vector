@@ -467,6 +467,20 @@ public sealed interface Bounds3I permits Bounds3I.Base {
     boolean overlaps(@NotNull Bounds3I other);
 
     /**
+     * Tests if this bounding box overlaps another. The behavior of this function is undefined when any of the lengths
+     * are negative.
+     *
+     * @param ox the other origin x
+     * @param oy the other origin y
+     * @param oz the other origin z
+     * @param lx the other length x
+     * @param ly the other length y
+     * @param lz the other length z
+     * @return true if there is an overlap, false otherwise
+     */
+    boolean overlaps(int ox, int oy, int oz, int lx, int ly, int lz);
+
+    /**
      * Tests if this bounding box contains the given vector.
      *
      * @param x the x-coordinate
@@ -690,6 +704,20 @@ public sealed interface Bounds3I permits Bounds3I.Base {
                     Math.max(originY(), ny1) > Math.min(other.originY(), ny2) &&
                     Math.min(originZ(), nz1) < Math.max(other.originZ(), nz2) &&
                     Math.max(originZ(), nz1) > Math.min(other.originZ(), nz2);
+        }
+
+        @Override
+        public boolean overlaps(int ox, int oy, int oz, int lx, int ly, int lz) {
+            double thisMaxX = maxX();
+            double thisMaxY = maxY();
+            double thisMaxZ = maxZ();
+
+            double otherMaxX = ox + lx;
+            double otherMaxY = oy + ly;
+            double otherMaxZ = oz + lz;
+
+            return originX() < otherMaxX && originY() < otherMaxY && originZ() < otherMaxZ &&
+                    thisMaxX > ox && thisMaxY > oy && thisMaxZ > oz;
         }
 
         @Override
