@@ -690,34 +690,14 @@ public sealed interface Bounds3I permits Bounds3I.Base {
 
         @Override
         public boolean overlaps(@NotNull Bounds3I other) {
-            int nx1 = maxX();
-            int ny1 = maxY();
-            int nz1 = maxZ();
-
-            int nx2 = other.maxX();
-            int ny2 = other.maxY();
-            int nz2 = other.maxZ();
-
-            return Math.min(originX(), nx1) < Math.max(other.originX(), nx2) &&
-                    Math.max(originX(), nx1) > Math.min(other.originX(), nx2) &&
-                    Math.min(originY(), ny1) < Math.max(other.originY(), ny2) &&
-                    Math.max(originY(), ny1) > Math.min(other.originY(), ny2) &&
-                    Math.min(originZ(), nz1) < Math.max(other.originZ(), nz2) &&
-                    Math.max(originZ(), nz1) > Math.min(other.originZ(), nz2);
+            return overlaps(other.originX(), other.originY(), other.originZ(), other.lengthX(), other.lengthY(),
+                    other.lengthZ());
         }
 
         @Override
         public boolean overlaps(int ox, int oy, int oz, int lx, int ly, int lz) {
-            double thisMaxX = maxX();
-            double thisMaxY = maxY();
-            double thisMaxZ = maxZ();
-
-            double otherMaxX = ox + lx;
-            double otherMaxY = oy + ly;
-            double otherMaxZ = oz + lz;
-
-            return originX() < otherMaxX && originY() < otherMaxY && originZ() < otherMaxZ &&
-                    thisMaxX > ox && thisMaxY > oy && thisMaxZ > oz;
+            return originX() < ox + lx && originY() < oy + ly && originZ() < oz + lz && maxX() > ox &&
+                    maxY() > oy && maxZ() > oz;
         }
 
         @Override
