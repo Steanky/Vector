@@ -683,16 +683,8 @@ public sealed interface Bounds3D permits Bounds3D.Base {
 
         @Override
         public boolean overlaps(double ox, double oy, double oz, double lx, double ly, double lz) {
-            double thisMaxX = maxX();
-            double thisMaxY = maxY();
-            double thisMaxZ = maxZ();
-
-            double otherMaxX = ox + lx;
-            double otherMaxY = oy + ly;
-            double otherMaxZ = oz + lz;
-
-            return originX() < otherMaxX && originY() < otherMaxY && originZ() < otherMaxZ && thisMaxX > ox &&
-                    thisMaxY > oy && thisMaxZ > oz;
+            return originX() < ox + lx && originY() < oy + ly && originZ() < oz + lz && maxX() > ox &&
+                    maxY() > oy && maxZ() > oz;
         }
 
         @Override
