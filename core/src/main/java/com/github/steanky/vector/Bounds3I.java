@@ -432,15 +432,14 @@ public sealed interface Bounds3I permits Bounds3I.Base {
     }
 
     /**
-     * Shrinks this bounding box in a specific direction. If this operation would cause any lengths to become negative,
-     * an exception will be thrown.
+     * Shrinks this bounding box in a specific direction. The actual length of any one side of the resulting bounds will
+     * shrink no smaller than 0.
      *
      * @param x the x shrink coordinate
      * @param y the y shrink coordinate
      * @param z the z shrink coordinate
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
-     * @throws IllegalArgumentException if this shrink would cause any of the bounding box lengths to go below 0
      */
     @NotNull Bounds3I shrinkDirectional(int x, int y, int z);
 
@@ -680,12 +679,32 @@ public sealed interface Bounds3I permits Bounds3I.Base {
 
         @Override
         public @NotNull Bounds3I expandDirectional(int x, int y, int z) {
-            return expandOrShrink(x, y, z, true);
+            int nox = originX() + Math.min(x, 0);
+            int noy = originY() + Math.min(y, 0);
+            int noz = originZ() + Math.min(z, 0);
+
+            int nlx = lengthX() + Math.abs(x);
+            int nly = lengthY() + Math.abs(y);
+            int nlz = lengthZ() + Math.abs(z);
+
+            return op(nox, noy, noz, nlx, nly, nlz);
         }
 
         @Override
         public @NotNull Bounds3I shrinkDirectional(int x, int y, int z) {
-            return expandOrShrink(x, y, z, false);
+            int lx = lengthX();
+            int ly = lengthY();
+            int lz = lengthZ();
+
+            int nlx = Math.max(lx - Math.abs(x), 0);
+            int nly = Math.max(ly - Math.abs(y), 0);
+            int nlz = Math.max(lz - Math.abs(z), 0);
+
+            int nox = originX() + lx < 0 ? 0 : lx - nlx;
+            int noy = originY() + ly < 0 ? 0 : ly - nly;
+            int noz = originZ() + lz < 0 ? 0 : lz - nlz;
+
+            return op(nox, noy, noz, nlx, nly, nlz);
         }
 
         @Override
@@ -748,64 +767,6 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         @Override
         public @NotNull Bounds3I mutableCopy() {
             return new Mutable(originX(), originY(), originZ(), lengthX(), lengthY(), lengthZ());
-        }
-
-        private @NotNull Bounds3I expandOrShrink(int x, int y, int z, boolean expand) {
-            int originOffsetX = 0;
-            int originOffsetY = 0;
-            int originOffsetZ = 0;
-
-            int lengthOffsetX = 0;
-            int lengthOffsetY = 0;
-            int lengthOffsetZ = 0;
-
-            if (x < 0) {
-                if (expand) {
-                    originOffsetX = x;
-                } else {
-                    lengthOffsetX = x;
-                }
-            } else if (x > 0) {
-                if (expand) {
-                    lengthOffsetX = x;
-                } else {
-                    originOffsetX = x;
-                }
-            }
-
-            if (y < 0) {
-                if (expand) {
-                    originOffsetY = y;
-                } else {
-                    lengthOffsetY = y;
-                }
-            } else if (y > 0) {
-                if (expand) {
-                    lengthOffsetY = y;
-                } else {
-                    originOffsetY = y;
-                }
-            }
-
-            if (z < 0) {
-                if (expand) {
-                    originOffsetZ = z;
-                } else {
-                    lengthOffsetZ = z;
-                }
-            } else if (z > 0) {
-                if (expand) {
-                    lengthOffsetZ = z;
-                } else {
-                    originOffsetZ = z;
-                }
-            }
-
-            int lX = validateLength(lengthX(), lengthOffsetX);
-            int lY = validateLength(lengthY(), lengthOffsetY);
-            int lZ = validateLength(lengthZ(), lengthOffsetZ);
-
-            return op(originX() + originOffsetX, originY() + originOffsetY, originZ() + originOffsetZ, lX, lY, lZ);
         }
 
         /**
