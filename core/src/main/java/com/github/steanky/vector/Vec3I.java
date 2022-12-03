@@ -19,18 +19,6 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
     Vec3I ORIGIN = VecCache.cached(0, 0, 0);
 
     /**
-     * Returns the shared thread local mutable vector for use by the calling thread. Note that there is only one
-     * instance created per thread, and so the value of the vector when calling this method will be whatever it was last
-     * set to by the calling thread. If the calling thread has not obtained an instance previously, the vector will be
-     * set to the origin (0, 0, 0).
-     *
-     * @return the shared thread local mutable vector
-     */
-    static @NotNull Vec3I threadLocal() {
-        return VecCache.THREAD_LOCAL_3I.get();
-    }
-
-    /**
      * Creates a new mutable vector.
      *
      * @param x the initial x-component
@@ -70,18 +58,6 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
     }
 
     /**
-     * Creates a mutable vector from the result of calling {@link Math#floor(double)} on each component of the provided
-     * double-precision vector.
-     *
-     * @param other the double-precision vector
-     *
-     * @return a mutable floored vector
-     */
-    static @NotNull Vec3I mutableFloored(@NotNull Vec3D other) {
-        return mutableFloored(other.x(), other.y(), other.z());
-    }
-
-    /**
      * Creates an immutable vector from the result of calling {@link Math#floor(double)} on each component.
      *
      * @param x the x-component
@@ -92,18 +68,6 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      */
     static @NotNull Vec3I immutableFloored(double x, double y, double z) {
         return VecCache.cached((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
-    }
-
-    /**
-     * Creates an immutable vector from the result of calling {@link Math#floor(double)} on each component of the
-     * provided double-precision vector.
-     *
-     * @param other the double-precision vector
-     *
-     * @return an immutable floored vector
-     */
-    static @NotNull Vec3I immutableFloored(@NotNull Vec3D other) {
-        return immutableFloored(other.x(), other.y(), other.z());
     }
 
     /**
@@ -437,6 +401,22 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
      * @return an immutable view of this vector
      */
     @NotNull Vec3I immutableView();
+
+    /**
+     * Creates a new, mutable {@link Vec3D} instance with the same components as this vector.
+     * @return a new mutable Vec3D
+     */
+    default @NotNull Vec3D toMutableDouble() {
+        return new Vec3D.Mutable(x(), y(), z());
+    }
+
+    /**
+     * Creates a new, immutable {@link Vec3D} instance with the same components as this vector.
+     * @return a new immutable Vec3D
+     */
+    default @NotNull Vec3D toImmutableDouble() {
+        return new Vec3D.Immutable(x(), y(), z());
+    }
 
     /**
      * Sets the value of this vector.

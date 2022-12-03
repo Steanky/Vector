@@ -19,18 +19,6 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
     Vec3D ORIGIN = Vec3D.immutable(0, 0, 0);
 
     /**
-     * Returns the shared thread local mutable vector for use by the calling thread. Note that there is only one
-     * instance created per thread, and so the value of the vector when calling this method will be whatever it was last
-     * set to by the calling thread. If the calling thread has not obtained an instance previously, the vector will be
-     * set to the origin (0, 0, 0).
-     *
-     * @return the shared thread local mutable vector
-     */
-    static @NotNull Vec3D threadLocal() {
-        return VecCache.THREAD_LOCAL_3D.get();
-    }
-
-    /**
      * Creates a new mutable vector.
      *
      * @param x the initial x-component
@@ -387,6 +375,46 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
      * @return an immutable view of this vector
      */
     @NotNull Vec3D immutableView();
+
+    /**
+     * Converts this double-valued vector to a {@link Vec3I} by calling {@link Math#floor(double)} on each component
+     * before casting to an int. The returned vector is mutable.
+     *
+     * @return a new mutable vector
+     */
+    default @NotNull Vec3I floorToMutableInt() {
+        return new Vec3I.Mutable((int)Math.floor(x()), (int)Math.floor(y()), (int)Math.floor(z()));
+    }
+
+    /**
+     * Converts this double-valued vector to a {@link Vec3I} by calling {@link Math#floor(double)} on each component
+     * before casting to an int. The returned vector is immutable.
+     *
+     * @return a new immutable vector
+     */
+    default @NotNull Vec3I floorToImmutableInt() {
+        return VecCache.cached((int)Math.floor(x()), (int)Math.floor(y()), (int)Math.floor(z()));
+    }
+
+    /**
+     * Converts this double-valued vector to a {@link Vec3I} by calling {@link Math#rint(double)} on each component
+     * before casting to an int. The returned vector is mutable.
+     *
+     * @return a new mutable vector
+     */
+    default @NotNull Vec3I roundToMutableInt() {
+        return new Vec3I.Mutable((int)Math.rint(x()), (int)Math.rint(y()), (int)Math.rint(z()));
+    }
+
+    /**
+     * Converts this double-valued vector to a {@link Vec3I} by calling {@link Math#rint(double)} on each component
+     * before casting to an int. The returned vector is immutable.
+     *
+     * @return a new immutable vector
+     */
+    default @NotNull Vec3I roundToImmutableInt() {
+        return VecCache.cached((int) Math.rint(x()), (int)Math.rint(y()), (int)Math.rint(z()));
+    }
 
     /**
      * Sets the value of this vector.
