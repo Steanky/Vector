@@ -31,4 +31,32 @@ class Bounds3ITest {
         assertEquals(2, bounds.maxY());
         assertEquals(2, bounds.maxZ());
     }
+
+    @Test
+    void expandDirectionalPositive() {
+        Bounds3I bounds = Bounds3I.mutable(0, 0, 0, 1, 1, 1);
+        bounds.expandDirectional(1, 1, 1);
+
+        assertEquals(0, bounds.originX());
+        assertEquals(0, bounds.originY());
+        assertEquals(0, bounds.originZ());
+
+        assertEquals(2, bounds.maxX());
+        assertEquals(2, bounds.maxY());
+        assertEquals(2, bounds.maxZ());
+    }
+
+    @Test
+    void expandDirectionalNegative() {
+        Bounds3I bounds = Bounds3I.mutable(0, 0, 0, 1, 1, 1);
+        bounds.expandDirectional(-1, -1, -1);
+
+        assertEquals(-1, bounds.originX());
+        assertEquals(-1, bounds.originY());
+        assertEquals(-1, bounds.originZ());
+
+        assertEquals(1, bounds.maxX());
+        assertEquals(1, bounds.maxY());
+        assertEquals(1, bounds.maxZ());
+    }
 }
