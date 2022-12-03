@@ -268,11 +268,55 @@ public sealed interface Bounds3I permits Bounds3I.Base {
     }
 
     /**
+     * Creates a new mutable {@link Vec3I} representing the origin of this bounds.
+     * @return a new Vec3I representing the origin of this bounds
+     */
+    default @NotNull Vec3I mutableOrigin() {
+        return new Vec3I.Mutable(originX(), originY(), originZ());
+    }
+
+    /**
+     * Creates an immutable {@link Vec3I} representing the origin of this bounds.
+     * @return a Vec3I representing the origin of this bounds
+     */
+    default @NotNull Vec3I immutableOrigin() {
+        return VecCache.cached(originX(), originY(), originZ());
+    }
+
+    /**
+     * Creates a new mutable {@link Vec3I} representing the lengths of this bounds.
+     * @return a new Vec3I representing the origin of this bounds
+     */
+    default @NotNull Vec3I mutableLengths() {
+        return new Vec3I.Mutable(lengthX(), lengthY(), lengthZ());
+    }
+
+    /**
+     * Creates an immutable {@link Vec3I} representing the lengths of this bounds.
+     * @return a Vec3I representing the origin of this bounds
+     */
+    default @NotNull Vec3I immutableLengths() {
+        return VecCache.cached(lengthX(), lengthY(), lengthZ());
+    }
+
+    /**
      * The volume of the bounds.
      *
      * @return the product of the lengths of the bounds
      */
     int volume();
+
+    /**
+     * The center of this bounds, as a mutable vector.
+     * @return the center of this bounds
+     */
+    @NotNull Vec3D mutableCenter();
+
+    /**
+     * The center of this bounds, as an immutable vector.
+     * @return the center of this bounds
+     */
+    @NotNull Vec3D immutableCenter();
 
     /**
      * Changes the origin vector of the bounds.
@@ -649,6 +693,20 @@ public sealed interface Bounds3I permits Bounds3I.Base {
         @Override
         public int volume() {
             return lengthX() * lengthY() * lengthZ();
+        }
+
+        @Override
+        public @NotNull Vec3D mutableCenter() {
+            return new Vec3D.Mutable(originX() + (lengthX() / 2.0),
+                    originY() + (lengthY() / 2.0),
+                    originZ() + (lengthZ() / 2.0));
+        }
+
+        @Override
+        public @NotNull Vec3D immutableCenter() {
+            return new Vec3D.Immutable(originX() + (lengthX() / 2.0),
+                    originY() + (lengthY() / 2.0),
+                    originZ() + (lengthZ() / 2.0));
         }
 
         @Override
