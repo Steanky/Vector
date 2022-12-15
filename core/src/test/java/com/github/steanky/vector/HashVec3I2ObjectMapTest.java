@@ -46,10 +46,17 @@ class HashVec3I2ObjectMapTest {
         map.put(0, 0, 0, 10);
 
         for (int i = 0; i < 1000; i++) {
-            int c = i * 2;
+            int c = i << 1;
             assertEquals( 10, map.get(c, c, c));
         }
+    }
 
+    @Test
+    void negativeKeys() {
+        HashVec3I2ObjectMap<Integer> map = new HashVec3I2ObjectMap<>(0, 0, 0, 2, 2, 2);
+        map.put(-1, -1, -1, 10);
+
+        assertEquals(10, map.get(1, 1, 1));
     }
 
     @Test
