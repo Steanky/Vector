@@ -25,6 +25,34 @@ class HashVec3I2ObjectMapTest {
     }
 
     @Test
+    void addressableSpace() {
+        HashVec3I2ObjectMap<Integer> map = new HashVec3I2ObjectMap<>(0, 0, 0, 2, 2, 2);
+
+        for (int i = 0; i < 10; i++) {
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    map.put(i, j, k, i * j * k);
+                }
+            }
+        }
+
+        assertEquals(8, map.size());
+        assertEquals(8, map.addressableSize());
+    }
+
+    @Test
+    void accessWrapping() {
+        HashVec3I2ObjectMap<Integer> map = new HashVec3I2ObjectMap<>(0, 0, 0, 2, 2, 2);
+        map.put(0, 0, 0, 10);
+
+        for (int i = 0; i < 1000; i++) {
+            int c = i * 2;
+            assertEquals( 10, map.get(c, c, c));
+        }
+
+    }
+
+    @Test
     void smallSpace() {
         Vec3I2ObjectMap<String> smallSpace = new HashVec3I2ObjectMap<>(0, 0, 0, 4, 4, 4);
         smallSpace.put(0, 0, 0, "test");
@@ -33,15 +61,40 @@ class HashVec3I2ObjectMapTest {
     }
 
     @Test
+    void smallWidths() {
+        HashVec3I2ObjectMap<String> map = new HashVec3I2ObjectMap<>(0, 0, 0, 1, 1, 1);
+        assertEquals(2, map.width());
+        assertEquals(2, map.height());
+        assertEquals(2, map.depth());
+    }
+
+    @Test
+    void mediumWidths() {
+        HashVec3I2ObjectMap<String> map = new HashVec3I2ObjectMap<>(0, 0, 0, 16, 16, 16);
+        assertEquals(16, map.width());
+        assertEquals(16, map.height());
+        assertEquals(16, map.depth());
+    }
+
+    @Test
+    void largeWidths() {
+        HashVec3I2ObjectMap<String> map = new HashVec3I2ObjectMap<>(0, 0, 0, Integer.MAX_VALUE, 16,
+                16);
+        assertEquals(Integer.MAX_VALUE + 1L, map.width());
+        assertEquals(16, map.height());
+        assertEquals(16, map.depth());
+    }
+
+    @Test
     void maximumSpace() {
         assertDoesNotThrow(() -> new HashVec3I2ObjectMap<>(0, 0, 0, Integer.MAX_VALUE, //31 bits
                 Integer.MAX_VALUE, //31 bits (62 total)
-                3)); //2 bits (64 total, maximum capacity)
+                4)); //2 bits (64 total, maximum capacity)
 
         assertThrows(IllegalArgumentException.class,
                 () -> new HashVec3I2ObjectMap<>(0, 0, 0, Integer.MAX_VALUE, //31 bits
                         Integer.MAX_VALUE, //31 bits (62 total)
-                        4)); //3 bits (65 total, capacity exceeded)
+                        5)); //3 bits (65 total, capacity exceeded)
     }
 
     @Test

@@ -66,9 +66,9 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
         this.y = y;
         this.z = z;
 
-        int widthBit = Integer.highestOneBit(width);
-        int heightBit = Integer.highestOneBit(height);
-        int depthBit = Integer.highestOneBit(depth);
+        int widthBit = Integer.highestOneBit(Math.max(width - 1, 1));
+        int heightBit = Integer.highestOneBit(Math.max(height - 1, 1));
+        int depthBit = Integer.highestOneBit(Math.max(depth - 1, 1));
 
         int bitWidth = bitSize(widthBit);
         int bitHeight = bitSize(heightBit);
@@ -157,6 +157,65 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
 
     private int z(long key) {
         return (int) (key & maskZ);
+    }
+
+    /**
+     * The origin x-coordinate of this map, and therefore the origin of its uniquely addressable space.
+     * @return the x-coordinate of the map origin
+     */
+    public int originX() {
+        return x;
+    }
+
+    /**
+     * The origin y-coordinate of this map, and therefore the origin of its uniquely addressable space.
+     * @return the y-coordinate of the map origin
+     */
+    public int originY() {
+        return y;
+    }
+
+    /**
+     * The origin z-coordinate of this map, and therefore the origin of its uniquely addressable space.
+     * @return the z-coordinate of the map origin
+     */
+    public int originZ() {
+        return z;
+    }
+
+    /**
+     * Gets the actual length of this bound's edges along the x-axis. The largest uniquely addressable coordinate along
+     * this axis is thus given by {@code originX + width - 1}.
+     * @return the actual width along the x-axis
+     */
+    public long width() {
+        return maskX + 1L;
+    }
+
+    /**
+     * Gets the actual length of this bound's edges along the x-axis. The largest uniquely addressable coordinate along
+     * this axis is thus given by {@code originY + height - 1}.
+     * @return the actual width along the y-axis
+     */
+    public long height() {
+        return maskY + 1L;
+    }
+
+    /**
+     * Gets the actual length of this bound's edges along the z-axis. The largest uniquely addressable coordinate along
+     * this axis is thus given by {@code originZ + depth - 1}.
+     * @return the actual width along the z-axis
+     */
+    public long depth() {
+        return maskZ + 1L;
+    }
+
+    /**
+     * Computes the maximum possible capacity of this map; i.e. the number of unique elements it may store.
+     * @return the addressable size of this map
+     */
+    public long addressableSize() {
+        return width() * height() * depth();
     }
 
     @Override
