@@ -134,6 +134,57 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
         this(x, y, z, width, height, depth, Hash.DEFAULT_INITIAL_SIZE, loadFactor);
     }
 
+    /**
+     * Convenience overload for {@link HashVec3I2ObjectMap#HashVec3I2ObjectMap(int, int, int, int, int, int, int, float)}
+     * that uses the origin and lengths from the provided bounds, the default initial size
+     * {@link Hash#DEFAULT_INITIAL_SIZE}, and the default load factor {@link Hash#DEFAULT_LOAD_FACTOR}.
+     *
+     * @param bounds the bounds which provides the origin and lengths
+     */
+    public HashVec3I2ObjectMap(@NotNull Bounds3I bounds) {
+        this(bounds.originX(), bounds.originY(), bounds.originZ(), bounds.lengthX(), bounds.lengthY(), bounds.lengthZ(),
+                Hash.DEFAULT_INITIAL_SIZE, Hash.DEFAULT_LOAD_FACTOR);
+    }
+
+    /**
+     * Convenience overload for {@link HashVec3I2ObjectMap#HashVec3I2ObjectMap(int, int, int, int, int, int, int, float)}
+     * that uses the origin and lengths from the provided bounds, the given initial size, and the default load factor
+     * {@link Hash#DEFAULT_LOAD_FACTOR}.
+     *
+     * @param bounds the bounds which provides the origin and lengths
+     * @param initialCapacity the initial capacity for the underlying map
+     */
+    public HashVec3I2ObjectMap(@NotNull Bounds3I bounds, int initialCapacity) {
+        this(bounds.originX(), bounds.originY(), bounds.originZ(), bounds.lengthX(), bounds.lengthY(), bounds.lengthZ(),
+                initialCapacity, Hash.DEFAULT_LOAD_FACTOR);
+    }
+
+    /**
+     * Convenience overload for {@link HashVec3I2ObjectMap#HashVec3I2ObjectMap(int, int, int, int, int, int, int, float)}
+     * that uses the origin and lengths from the provided bounds, the default initial size
+     * {@link Hash#DEFAULT_INITIAL_SIZE}, and the given load factor.
+     *
+     * @param bounds the bounds which provides the origin and lengths
+     * @param loadFactor the load factor for the underlying map
+     */
+    public HashVec3I2ObjectMap(@NotNull Bounds3I bounds, float loadFactor) {
+        this(bounds.originX(), bounds.originY(), bounds.originZ(), bounds.lengthX(), bounds.lengthY(), bounds.lengthZ(),
+                Hash.DEFAULT_INITIAL_SIZE, loadFactor);
+    }
+
+    /**
+     * Convenience overload for {@link HashVec3I2ObjectMap#HashVec3I2ObjectMap(int, int, int, int, int, int, int, float)}
+     * that uses the origin and lengths from the provided bounds, the given initial size, and the given load factor.
+     *
+     * @param bounds the bounds which provides the origin and lengths
+     * @param initialCapacity the initial capacity for the underlying map
+     * @param loadFactor the load factor for the underlying map
+     */
+    public HashVec3I2ObjectMap(@NotNull Bounds3I bounds, int initialCapacity, float loadFactor) {
+        this(bounds.originX(), bounds.originY(), bounds.originZ(), bounds.lengthX(), bounds.lengthY(), bounds.lengthZ(),
+                initialCapacity, loadFactor);
+    }
+
     private static int bitSize(int highestBit) {
         return Integer.numberOfTrailingZeros(highestBit) + 1;
     }
