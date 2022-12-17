@@ -244,7 +244,7 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
     }
 
     /**
-     * Gets the actual length of this bound's edges along the x-axis. The largest uniquely addressable coordinate along
+     * Gets the actual length of this bound's edges along the y-axis. The largest uniquely addressable coordinate along
      * this axis is thus given by {@code originY + height - 1}.
      * @return the actual width along the y-axis
      */

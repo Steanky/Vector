@@ -445,13 +445,12 @@ public sealed interface Bounds3D permits Bounds3D.Base {
     }
 
     /**
-     * Expands this bounding box in all directions. Giving a negative amount will shrink the bounding box instead.
-     * Shrinking the bounding box such that any length would become negative will result in an exception.
+     * Expands this bounding box uniformly in all directions. Giving a negative amount will shrink the bounding box
+     * instead. Side lengths will be limited to 0 at a minimum, when shrinking.
      *
      * @param amount the amount by which to expand the bounding box
      *
      * @return a new bounds if this bounds is immutable, otherwise this bounds
-     * @throws IllegalArgumentException if this expansion would cause any of the bounding box lengths to shrink below 0
      */
     @NotNull Bounds3D expand(double amount);
 
@@ -593,15 +592,6 @@ public sealed interface Bounds3D permits Bounds3D.Base {
             }
         }
 
-        private static double validateLength(double a, double b) {
-            double sum = a + b;
-            if (sum < 0) {
-                throw new IllegalArgumentException("Negative lengths are not allowed");
-            }
-
-            return sum;
-        }
-
         private static Bounds3D enclosingFromPair(boolean mutable, Bounds3D first, Bounds3D second) {
             double minX = Math.min(first.originX(), second.originX());
             double minY = Math.min(first.originY(), second.originY());
@@ -716,10 +706,19 @@ public sealed interface Bounds3D permits Bounds3D.Base {
         public @NotNull Bounds3D expand(double amount) {
             double doubleAmount = amount * 2;
 
-            double lX = validateLength(lengthX(), doubleAmount);
-            double lY = validateLength(lengthY(), doubleAmount);
-            double lZ = validateLength(lengthZ(), doubleAmount);
-            return op(originX() - amount, originY() - amount, originZ() - amount, lX, lY, lZ);
+            double xl = lengthX();
+            double yl = lengthY();
+            double zl = lengthZ();
+
+            double lX = Math.max(0, xl + doubleAmount);
+            double lY = Math.max(0, yl + doubleAmount);
+            double lZ = Math.max(0, zl + doubleAmount);
+
+            double aX = lX - xl;
+            double aY = lY - yl;
+            double aZ = lZ - zl;
+
+            return op(originX() - (aX / 2), originY() - (aY / 2), originZ() - (aZ / 2), lX, lY, lZ);
         }
 
         @Override
