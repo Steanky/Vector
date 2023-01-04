@@ -11,7 +11,7 @@ import java.util.function.Function;
 
 /**
  * Abstract implementation of {@link Vec3I2ObjectMap} that provides some basic overrides delegating methods from
- * {@link Map} to {@link Vec3I2ObjectMap}.
+ * {@link Map} to {@link Vec3I2ObjectMap} methods.
  *
  * @param <T> the type of object stored in the map
  */

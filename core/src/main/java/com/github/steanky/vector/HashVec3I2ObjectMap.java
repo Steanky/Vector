@@ -1,10 +1,7 @@
 package com.github.steanky.vector;
 
 import it.unimi.dsi.fastutil.Hash;
-import it.unimi.dsi.fastutil.longs.AbstractLong2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -16,36 +13,10 @@ import java.util.function.BiFunction;
  *
  * @param <T> the type of object held in the map
  */
-public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
-    private final Long2ObjectOpenHashMap<T> underlyingMap;
-
-    private final int x;
-    private final int y;
-    private final int z;
-
-    private final int maskX;
-    private final int maskY;
-    private final int maskZ;
-
-    private final int bitHeight;
-    private final int bitDepth;
-
+public class HashVec3I2ObjectMap<T> extends BitPackingVec3I2ObjectMap<T> {
     /**
-     * Creates a new {@link HashVec3I2ObjectMap} with the given origin and bounds. All operations are performed relative
-     * to the origin. Combining with width, height, and depth gives a rectangular prism bounding the set of all
-     * potentially unique values. Attempting to perform an operation that exceeds this space will "wrap around" and
-     * access an area of the space corresponding to the modulus of the actual width of the exceeding dimension.
-     * Therefore, there are no coordinates which are strictly outside the scope of this map, although the actual number
-     * of unique values possible is limited to the product of the actual widths.
-     * <p>
-     * The "actual width" of an axis is not necessarily the value given to the constructor. Rather, it is the highest
-     * power of two that is strictly greater than the given width. For example, a given width of 1 will yield an actual
-     * width of 2, and a given width of 4 will yield an actual width of 8.
-     * <p>
-     * The sum of the base-2 logarithms of the actual widths cannot exceed {@link Long#SIZE}, or an
-     * {@link IllegalArgumentException} will be thrown by this constructor.
-     * <p>
-     * Negative widths are not allowed and will result in an {@link IllegalArgumentException}.
+     * Creates a new {@link HashVec3I2ObjectMap} with the given origin and bounds, backed by an underlying
+     * {@link Long2ObjectOpenHashMap} See {@link BitPackingVec3I2ObjectMap} for more details.
      *
      * @param x               the x-origin
      * @param y               the y-origin
@@ -56,35 +27,9 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
      * @param initialCapacity the initial capacity of the underlying map
      * @param loadFactor      the load factor of the underlying map
      */
-    public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth, int initialCapacity, float loadFactor) {
-        this.underlyingMap = new Long2ObjectOpenHashMap<>(initialCapacity, loadFactor);
-        if (width <= 0 || height <= 0 || depth <= 0) {
-            throw new IllegalArgumentException("Side lengths cannot be negative or 0");
-        }
-
-        this.x = x;
-        this.y = y;
-        this.z = z;
-
-        int widthBit = Integer.highestOneBit(Math.max(width - 1, 1));
-        int heightBit = Integer.highestOneBit(Math.max(height - 1, 1));
-        int depthBit = Integer.highestOneBit(Math.max(depth - 1, 1));
-
-        int bitWidth = bitSize(widthBit);
-        int bitHeight = bitSize(heightBit);
-        int bitDepth = bitSize(depthBit);
-
-        if ((bitWidth + bitHeight + bitDepth) > Long.SIZE) {
-            throw new IllegalArgumentException(
-                    "Cannot create a BasicVec3I2ObjectMap with more than 2^64 possible " + "values");
-        }
-
-        this.maskX = (widthBit << 1) - 1;
-        this.maskY = (heightBit << 1) - 1;
-        this.maskZ = (depthBit << 1) - 1;
-
-        this.bitHeight = bitHeight;
-        this.bitDepth = bitDepth;
+    public HashVec3I2ObjectMap(int x, int y, int z, int width, int height, int depth, int initialCapacity,
+            float loadFactor) {
+        super(x, y, z, width, height, depth, new Long2ObjectOpenHashMap<>(initialCapacity, loadFactor));
     }
 
     /**
@@ -185,90 +130,6 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
                 initialCapacity, loadFactor);
     }
 
-    private static int bitSize(int highestBit) {
-        return Integer.numberOfTrailingZeros(highestBit) + 1;
-    }
-
-    private long pack(long x, long y, int z) {
-        return (((x - this.x) & maskX) << (bitHeight + bitDepth)) | (((y - this.y) & maskY) << bitDepth) |
-                ((z - this.z) & maskZ);
-    }
-
-    private @NotNull Vec3I unpack(long key) {
-        return Vec3I.immutable(x(key), y(key), z(key));
-    }
-
-    private int x(long key) {
-        return (int) ((key >>> (bitDepth + bitHeight)) & maskX);
-    }
-
-    private int y(long key) {
-        return (int) ((key >>> bitDepth) & maskY);
-    }
-
-    private int z(long key) {
-        return (int) (key & maskZ);
-    }
-
-    /**
-     * The origin x-coordinate of this map, and therefore the origin of its uniquely addressable space.
-     * @return the x-coordinate of the map origin
-     */
-    public int originX() {
-        return x;
-    }
-
-    /**
-     * The origin y-coordinate of this map, and therefore the origin of its uniquely addressable space.
-     * @return the y-coordinate of the map origin
-     */
-    public int originY() {
-        return y;
-    }
-
-    /**
-     * The origin z-coordinate of this map, and therefore the origin of its uniquely addressable space.
-     * @return the z-coordinate of the map origin
-     */
-    public int originZ() {
-        return z;
-    }
-
-    /**
-     * Gets the actual length of this bound's edges along the x-axis. The largest uniquely addressable coordinate along
-     * this axis is thus given by {@code originX + width - 1}.
-     * @return the actual width along the x-axis
-     */
-    public long width() {
-        return maskX + 1L;
-    }
-
-    /**
-     * Gets the actual length of this bound's edges along the y-axis. The largest uniquely addressable coordinate along
-     * this axis is thus given by {@code originY + height - 1}.
-     * @return the actual width along the y-axis
-     */
-    public long height() {
-        return maskY + 1L;
-    }
-
-    /**
-     * Gets the actual length of this bound's edges along the z-axis. The largest uniquely addressable coordinate along
-     * this axis is thus given by {@code originZ + depth - 1}.
-     * @return the actual width along the z-axis
-     */
-    public long depth() {
-        return maskZ + 1L;
-    }
-
-    /**
-     * Computes the maximum possible capacity of this map; i.e. the number of unique elements it may store.
-     * @return the addressable size of this map
-     */
-    public long addressableSize() {
-        return width() * height() * depth();
-    }
-
     @Override
     public T get(int x, int y, int z) {
         return underlyingMap.get(pack(x, y, z));
@@ -361,28 +222,6 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
         return underlyingMap.putIfAbsent(pack(x, y, z), value);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
-    @Override
-    public void putAll(@NotNull Vec3I2ObjectMap<? extends T> map) {
-        Objects.requireNonNull(map);
-        if (map instanceof HashVec3I2ObjectMap<?> other) {
-            //we can do a more efficient put by directly accessing the underlying map
-            underlyingMap.putAll((Map<? extends Long, ? extends T>) other.underlyingMap);
-        } else {
-            //don't put one-by-one, this could result in lots of table resizing for large maps
-            Map.Entry[] entries = map.entrySet().toArray(Entry[]::new);
-            for (int i = 0; i < entries.length; i++) {
-                Map.Entry old = entries[i];
-                Vec3I key = (Vec3I) old.getKey();
-                Object value = Objects.requireNonNull(old.getValue());
-
-                entries[i] = Map.entry(pack(key.x(), key.y(), key.z()), value);
-            }
-
-            underlyingMap.putAll(Map.ofEntries(entries));
-        }
-    }
-
     @Override
     public T replace(int x, int y, int z, T value) {
         Objects.requireNonNull(value);
@@ -445,85 +284,13 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
         return underlyingMap.values();
     }
 
-    @Override
-    public @NotNull Set<Entry<Vec3I, T>> entrySet() {
-        return new AbstractSet<>() {
-            private final ObjectSet<Long2ObjectMap.Entry<T>> entrySet = underlyingMap.long2ObjectEntrySet();
-
-            @Override
-            public Iterator<Entry<Vec3I, T>> iterator() {
-                return new Iterator<>() {
-                    private final Iterator<Long2ObjectMap.Entry<T>> iterator = entrySet.iterator();
-
-                    @Override
-                    public boolean hasNext() {
-                        return iterator.hasNext();
-                    }
-
-                    @Override
-                    public Entry<Vec3I, T> next() {
-                        Long2ObjectMap.Entry<T> next = iterator.next();
-
-                        long nextKey = next.getLongKey();
-                        Vec3I key = unpack(nextKey);
-                        return new Entry<>() {
-                            @Override
-                            public Vec3I getKey() {
-                                return key;
-                            }
-
-                            @Override
-                            public T getValue() {
-                                return next.getValue();
-                            }
-
-                            @Override
-                            public T setValue(T value) {
-                                return next.setValue(value);
-                            }
-                        };
-                    }
-
-                    @Override
-                    public void remove() {
-                        iterator.remove();
-                    }
-                };
-            }
-
-            @Override
-            public int size() {
-                return underlyingMap.size();
-            }
-
-            @Override
-            public boolean remove(Object o) {
-                if (!(o instanceof Entry<?, ?> entry)) {
-                    return false;
-                }
-
-                Object keyObject = entry.getKey();
-                if (!(keyObject instanceof Vec3I vec)) {
-                    return false;
-                }
-
-                return entrySet.remove(
-                        new AbstractLong2ObjectMap.BasicEntry<>(pack(vec.x(), vec.y(), vec.z()), entry.getValue()));
-            }
-
-            @Override
-            public void clear() {
-                entrySet.clear();
-            }
-        };
-    }
 
     /**
      * Calls {@link Long2ObjectOpenHashMap#trim()} on the underlying map.
      * @return true if there was enough memory to trim the map
      */
     public boolean trim() {
-        return underlyingMap.trim();
+        return ((Long2ObjectOpenHashMap<?>)underlyingMap).trim();
     }
 
     /**
@@ -532,6 +299,6 @@ public class HashVec3I2ObjectMap<T> extends AbstractVec3I2ObjectMap<T> {
      * @return true if there was enough memory to trim the map
      */
     public boolean trim(int n) {
-        return underlyingMap.trim(n);
+        return ((Long2ObjectOpenHashMap<?>)underlyingMap).trim(n);
     }
 }

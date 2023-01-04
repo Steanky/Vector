@@ -1,10 +1,14 @@
 metadata.format.version = "1.1"
 
 [versions]
+flare = "2.0.1"
 junit-jupiter = "5.9.0-M1"
 
 [libraries]
 fastutil = { module = "it.unimi.dsi:fastutil", version = "8.5.8" }
+
+flare = { module = "space.vectrix.flare:flare", version.ref = "flare" }
+flare-fastutil = { module = "space.vectrix.flare:flare-fastutil", version.ref = "flare" }
 
 jetbrains-annotations = { module = "org.jetbrains:annotations", version = "23.0.0" }
 
