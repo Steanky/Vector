@@ -5,7 +5,6 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
-import java.util.function.BiFunction;
 
 /**
  * Implementation of {@link Vec3I2ObjectMap} based on an internal {@link Long2ObjectOpenHashMap}. Null keys and values
@@ -131,33 +130,6 @@ public class HashVec3I2ObjectMap<T> extends BitPackingVec3I2ObjectMap<T> {
     }
 
     @Override
-    public T get(int x, int y, int z) {
-        return underlyingMap.get(pack(x, y, z));
-    }
-
-    @Override
-    public T put(int x, int y, int z, T value) {
-        Objects.requireNonNull(value);
-        return underlyingMap.put(pack(x, y, z), value);
-    }
-
-    @Override
-    public T remove(int x, int y, int z) {
-        return underlyingMap.remove(pack(x, y, z));
-    }
-
-    @Override
-    public boolean remove(int x, int y, int z, Object value) {
-        Objects.requireNonNull(value);
-        return underlyingMap.remove(pack(x, y, z), value);
-    }
-
-    @Override
-    public boolean containsKey(int x, int y, int z) {
-        return underlyingMap.containsKey(pack(x, y, z));
-    }
-
-    @Override
     public T computeIfAbsent(int x, int y, int z, @NotNull Vec3IFunction<? extends T> mappingFunction) {
         Objects.requireNonNull(mappingFunction);
 
@@ -215,75 +187,6 @@ public class HashVec3I2ObjectMap<T> extends BitPackingVec3I2ObjectMap<T> {
         underlyingMap.put(key, newValue);
         return newValue;
     }
-
-    @Override
-    public T putIfAbsent(int x, int y, int z, T value) {
-        Objects.requireNonNull(value);
-        return underlyingMap.putIfAbsent(pack(x, y, z), value);
-    }
-
-    @Override
-    public T replace(int x, int y, int z, T value) {
-        Objects.requireNonNull(value);
-        return underlyingMap.replace(pack(x, y, z), value);
-    }
-
-    @Override
-    public boolean replace(int x, int y, int z, T oldValue, T newValue) {
-        Objects.requireNonNull(newValue);
-        if (oldValue == null) {
-            return false;
-        }
-
-        return underlyingMap.replace(pack(x, y, z), oldValue, newValue);
-    }
-
-    @Override
-    public void replaceAll(@NotNull Vec3IObjectBiFunction<? super T, ? extends T> function) {
-        Objects.requireNonNull(function);
-        underlyingMap.replaceAll((l, t) -> function.apply(x(l), y(l), z(l), t));
-    }
-
-    @Override
-    public T getOrDefault(int x, int y, int z, T def) {
-        return underlyingMap.getOrDefault(pack(x, y, z), def);
-    }
-
-    @Override
-    public T merge(int x, int y, int z, T value, @NotNull BiFunction<? super T, ? super T, ? extends T> mergeFunction) {
-        Objects.requireNonNull(value);
-        return underlyingMap.merge(pack(x, y, z), value, mergeFunction);
-    }
-
-    @Override
-    public void forEach(@NotNull Vec3IObjectBiConsumer<? super T> consumer) {
-        underlyingMap.forEach((l, t) -> consumer.accept(x(l), y(l), z(l), t));
-    }
-
-    @Override
-    public int size() {
-        return underlyingMap.size();
-    }
-
-    @Override
-    public boolean containsValue(Object value) {
-        if (value == null) {
-            return false;
-        }
-
-        return underlyingMap.containsValue(value);
-    }
-
-    @Override
-    public void clear() {
-        underlyingMap.clear();
-    }
-
-    @Override
-    public @NotNull Collection<T> values() {
-        return underlyingMap.values();
-    }
-
 
     /**
      * Calls {@link Long2ObjectOpenHashMap#trim()} on the underlying map.

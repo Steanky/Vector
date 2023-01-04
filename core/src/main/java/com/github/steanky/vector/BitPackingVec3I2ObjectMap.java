@@ -6,10 +6,11 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 /**
  * A further abstract implementation of {@link AbstractVec3I2ObjectMap} which is based on a bounded rectangular prism of
- * possible unique values, and an internal {@link Long2ObjectMap} which holds them.
+ * possible unique values, and an internal {@link Long2ObjectMap} which holds them. Null values are disallowed.
  *
  * @param <T> the type of object stored in the underlying map
  * @see ConcurrentHashVec3I2ObjectMap
@@ -304,5 +305,128 @@ public abstract class BitPackingVec3I2ObjectMap<T> extends AbstractVec3I2ObjectM
      */
     public long addressableSize() {
         return width() * height() * depth();
+    }
+
+    @Override
+    public T get(int x, int y, int z) {
+        return underlyingMap.get(pack(x, y, z));
+    }
+
+    @Override
+    public T put(int x, int y, int z, @NotNull T value) {
+        Objects.requireNonNull(value);
+        return underlyingMap.put(pack(x, y, z), value);
+    }
+
+    @Override
+    public T remove(int x, int y, int z) {
+        return underlyingMap.remove(pack(x, y, z));
+    }
+
+    @Override
+    public boolean remove(int x, int y, int z, @NotNull Object value) {
+        Objects.requireNonNull(value);
+        return underlyingMap.remove(pack(x, y, z), value);
+    }
+
+    @Override
+    public boolean containsKey(int x, int y, int z) {
+        return underlyingMap.containsKey(pack(x, y, z));
+    }
+
+    @Override
+    public T computeIfAbsent(int x, int y, int z, @NotNull Vec3IFunction<? extends T> mappingFunction) {
+        Objects.requireNonNull(mappingFunction);
+        return underlyingMap.computeIfAbsent(pack(x, y, z), ignored -> Objects.requireNonNull(mappingFunction
+                .apply(x, y, z)));
+    }
+
+    @Override
+    public T computeIfPresent(int x, int y, int z, @NotNull Vec3IObjectBiFunction<? super T, ? extends T> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        return underlyingMap.computeIfPresent(pack(x, y, z), (ignored, t) -> Objects.requireNonNull(remappingFunction
+                .apply(x, y, z, t)));
+    }
+
+    @Override
+    public T compute(int x, int y, int z, @NotNull Vec3IObjectBiFunction<? super T, ? extends T> remappingFunction) {
+        Objects.requireNonNull(remappingFunction);
+        return underlyingMap.compute(pack(x, y, z), (ignored, t) -> Objects.requireNonNull(remappingFunction
+                .apply(x, y, z, t)));
+    }
+
+    @Override
+    public T putIfAbsent(int x, int y, int z, @NotNull T value) {
+        Objects.requireNonNull(value);
+        return underlyingMap.putIfAbsent(pack(x, y, z), value);
+    }
+
+    @Override
+    public T replace(int x, int y, int z, @NotNull T value) {
+        Objects.requireNonNull(value);
+        return underlyingMap.replace(pack(x, y, z), value);
+    }
+
+    @Override
+    public boolean replace(int x, int y, int z, T oldValue, @NotNull T newValue) {
+        Objects.requireNonNull(newValue);
+        if (oldValue == null) {
+            return false;
+        }
+
+        return underlyingMap.replace(pack(x, y, z), oldValue, newValue);
+    }
+
+    @Override
+    public void replaceAll(@NotNull Vec3IObjectBiFunction<? super T, ? extends T> function) {
+        Objects.requireNonNull(function);
+        underlyingMap.replaceAll((l, t) -> Objects.requireNonNull(function.apply(x(l), y(l), z(l), t)));
+    }
+
+    @Override
+    public T getOrDefault(int x, int y, int z, T def) {
+        return underlyingMap.getOrDefault(pack(x, y, z), def);
+    }
+
+    @Override
+    public @NotNull T merge(int x, int y, int z, @NotNull T value,
+            @NotNull BiFunction<? super T, ? super T, ? extends T> mergeFunction) {
+        Objects.requireNonNull(value);
+        return underlyingMap.merge(pack(x, y, z), value, (t, t2) -> Objects.requireNonNull(mergeFunction.apply(t, t2)));
+    }
+
+    @Override
+    public void forEach(@NotNull Vec3IObjectBiConsumer<? super T> consumer) {
+        Objects.requireNonNull(consumer);
+        underlyingMap.forEach((l, t) -> consumer.accept(x(l), y(l), z(l), t));
+    }
+
+    @Override
+    public int size() {
+        return underlyingMap.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return underlyingMap.isEmpty();
+    }
+
+    @Override
+    public boolean containsValue(Object value) {
+        if (value == null) {
+            return false;
+        }
+
+        return underlyingMap.containsValue(value);
+    }
+
+    @Override
+    public void clear() {
+        underlyingMap.clear();
+    }
+
+    @Override
+    public @NotNull Collection<T> values() {
+        return underlyingMap.values();
     }
 }
