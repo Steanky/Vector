@@ -6,10 +6,10 @@ import java.util.Map;
 import java.util.function.BiFunction;
 
 /**
- * A {@link Map} that stores values under integer-vector keys. This is more efficient than using a map of {@link Vec3I}
- * keys to some value, since there is no need to call {@link Object#equals(Object)} or {@link Object#hashCode()} on the
- * key vectors. Additionally, operations like {@link Vec3I2ObjectMap#get(int, int, int)} do not require the creation of
- * a potentially redundant object.
+ * A {@link Map} that stores values under integer-vector keys. This can be more efficient than using a regular map of
+ * {@link Vec3I} keys to some value, since there is no need to call {@link Object#equals(Object)} or
+ * {@link Object#hashCode()} on the key vectors. Additionally, operations like
+ * {@link Vec3I2ObjectMap#get(int, int, int)} do not necessitate the creation of a potentially redundant object.
  * <p>
  * Null keys are not supported. Null values may or may not be supported, at the discretion of the implementation.
  * <p>
