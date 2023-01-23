@@ -564,8 +564,8 @@ public sealed interface Vec3I extends Comparable<Vec3I> permits Vec3I.Base {
         @Override
         public double distanceSquaredTo(int x, int y, int z) {
             int dX = x - x();
-            int dY = x - y();
-            int dZ = x - z();
+            int dY = y - y();
+            int dZ = z - z();
 
             return dX * dX + dY * dY + dZ * dZ;
         }

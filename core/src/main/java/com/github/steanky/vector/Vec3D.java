@@ -558,8 +558,8 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
         @Override
         public double distanceSquaredTo(double x, double y, double z) {
             double dX = x - x();
-            double dY = x - y();
-            double dZ = x - z();
+            double dY = y - y();
+            double dZ = z - z();
 
             return dX * dX + dY * dY + dZ * dZ;
         }
