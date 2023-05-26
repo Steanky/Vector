@@ -547,7 +547,11 @@ public sealed interface Vec3D extends Comparable<Vec3D> permits Vec3D.Base {
 
         @Override
         public double lengthSquared() {
-            return x() * y() * z();
+            int x = x();
+            int y = y();
+            int z = z();
+
+            return x * x + y * y + z * z;
         }
 
         @Override
